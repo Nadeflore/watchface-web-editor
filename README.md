@@ -1,2 +1,31 @@
-# watchface-web-editor
-Watchface web editor
+# Watchface web editor
+
+An editor for bin watchface files made in javascript.
+
+## Get started
+
+Install the dependencies...
+
+```bash
+npm install
+```
+
+...then start the dev server
+
+```bash
+npm run dev
+```
+
+And navigate to [localhost:5000](http://localhost:5000)
+
+
+## Tests
+
+Run tests with
+
+```bash
+npm test
+```
+
+
+
