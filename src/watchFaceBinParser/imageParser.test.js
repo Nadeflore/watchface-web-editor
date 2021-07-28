@@ -1,4 +1,4 @@
-import { parseImage } from './imageParser'
+import { parseImage, writeImage } from './imageParser'
 
 describe('parseImage()', () => {
     it('parse 32 bit image', () => {
@@ -239,5 +239,26 @@ describe('parseImage()', () => {
                 "pixelFormat": 0x64
             }
         )
+    })
+})
+
+describe('writeImage()', () => {
+    it('write 24 bit abgr image', () => {
+        expect(new Uint8Array(writeImage(new Uint8ClampedArray([
+            0x88, 0x84, 0x48, 0xFF - 0xBC, // 1st pixel
+            0x90, 0x44, 0x20, 0xFF - 0x88, // 2nd pixel
+        ]), 2, 1))).toStrictEqual(
+            new Uint8Array([
+                0x42, 0x4D, // signature (BM)
+                0x1B, 0x00, // pixel format (8:5:6:5) abgr
+                0x02, 0x00, // width 2px
+                0x01, 0x00, // height 1px
+                0x06, 0x00, // row width 6 bytes
+                0x18, 0x00, // 24 bits per pixel
+                0x00, 0x00, // No palette
+                0x00, 0x00, // No palette transparency
+                0xBC, 0x4C, 0x31, // 1st pixel
+                0x88, 0x22, 0x32, // 2nd pixel
+             ]))
     })
 })
