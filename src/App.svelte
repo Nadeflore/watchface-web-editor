@@ -1,41 +1,49 @@
 <script>
 	import { parseWatchFaceBin, writeWatchFaceBin } from './watchFaceBinParser/watchFaceBinParser'
+	import { startFileDownload } from './utils'
 	import ResourceImagesBar from './ResourceImagesBar.svelte'
+	import ToolBar from './ToolBar.svelte'
 
 	let files;
 	let parameters;
 	let images = [];
 	let href;
+	let json;
 
-	const onFileSelected = (e) => {
-		let image = e.target.files[0];
-		let reader = new FileReader();
-		reader.readAsArrayBuffer(image);
-		reader.onload = (e) => {
-			const buffer = e.target.result;
-
-			const {parameters: parsedParameters, images: parsedImages} = parseWatchFaceBin(buffer)
-			parameters = parsedParameters
-			images = parsedImages
-		};
+	const handleFileLoad = (event) => {
+		const {parameters: parsedParameters, images: parsedImages} = parseWatchFaceBin(event.detail.buffer)
+		parameters = parsedParameters
+		json = JSON.stringify(parameters, null, 2)
+		images = parsedImages
 	};
 
-	const createFile = () => {
-		var data = new Blob([writeWatchFaceBin(parameters, images)], {type: 'application/octet-stream'});
-		href = window.URL.createObjectURL(data);
+	const exportBinFile = () => {
+		const binFile = writeWatchFaceBin(JSON.parse(json), images)
+		startFileDownload(binFile, 'application/octet-stream', "watchface.bin");
 	}
 </script>
+<div class="editor">
+	<ToolBar on:fileLoad={handleFileLoad} on:export={exportBinFile} showExportButton={parameters}></ToolBar>
 
-<input type="file" on:change={(e) => onFileSelected(e)} bind:files />
-
-<ResourceImagesBar images={images}/>
-
-{#if parameters}
-	<button on:click={createFile}>Generate bin file</button>
-	{#if href}
-	<a download="watchface.bin" href={href}>Download</a>
+	{#if parameters}
+		<pre class="json-editor" contenteditable="true" spellcheck="false" bind:textContent={json}></pre>
 	{/if}
 
-	<pre>{JSON.stringify(parameters, null, 2)}</pre>
-{/if}
+	<ResourceImagesBar images={images}/>
+</div>
 
+<style>
+	:global(body) {
+		padding: 0;
+	}
+	.editor {
+		height: 100%;
+	}
+	.json-editor {
+		height: calc(100vh - 210px - 50px);
+		margin: 0;
+	}
+	.json-editor {
+		overflow-y:auto;
+	}
+</style>

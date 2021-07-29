@@ -1,17 +1,19 @@
 <script>
     export let images
 
-    import ImageBlock from './ImageBlock.svelte'
+    import ResourceImageBlock from './ResourceImageBlock.svelte'
 </script>
 
 <div class="bar">
     {#each images as image, i}
-        <ImageBlock image={image} id={i}/>
+        <ResourceImageBlock image={image} id={i}/>
     {/each}
 </div>
 
 <style>
     .bar {
+        overflow-x:auto;
         display:flex;
+        height: 210px;
     }
 </style>

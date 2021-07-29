@@ -1,5 +1,6 @@
 <script>
 	export let image;
+	export let displaySize = undefined;
 
 	import { onMount } from 'svelte';
 	
@@ -18,6 +19,11 @@
 
 		ctx.putImageData(imageData, 0, 0);
 	}
+
+	$: if (displaySize && canvas) {
+		canvas.style.width = displaySize.width + "px"
+		canvas.style.height = displaySize.height + "px"
+	}
 </script>
 
-<canvas bind:this={canvas}></canvas>
+<canvas class="image" bind:this={canvas}></canvas>
