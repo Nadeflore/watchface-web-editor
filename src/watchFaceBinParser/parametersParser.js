@@ -74,7 +74,7 @@ export function writeParameters(parameters) {
 				result.push(...writeVariableWidthValue(key << 3))
 				// write value
 				result.push(...writeVariableWidthValue(value))
-			} else {
+			} else if (Array.isArray(value) || typeof value === "object") {
 				// recursive call for children
 				const children = writeParameters(value)
 				// write key
@@ -83,6 +83,8 @@ export function writeParameters(parameters) {
 				result.push(...writeVariableWidthValue(children.length))
 				// write children
 				result.push(...children)
+			} else {
+				throw Error("Value is invalid")
 			}
 		}
 	}

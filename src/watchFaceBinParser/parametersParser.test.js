@@ -70,6 +70,13 @@ describe('writeParameters()', () => {
             }
         )).toStrictEqual(Uint8Array.of(0x80, 0x02, 0x04))
     })
+    it('raise error if value is not a number', () => {
+        expect(() => {writeParameters(
+            {
+                "1": "hello"
+            }
+        )}).toThrowError("Value is invalid")
+    })
 })
 
 describe('readVariableWidthValue()', () => {
