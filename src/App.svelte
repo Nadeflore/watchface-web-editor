@@ -3,31 +3,44 @@
 	import { startFileDownload } from './utils'
 	import ResourceImagesBar from './ResourceImagesBar.svelte'
 	import ToolBar from './ToolBar.svelte'
+	import PreviewTab from './PreviewTab.svelte'
 
-	let files;
-	let parameters;
+	let parameters = {};
 	let images = [];
-	let href;
-	let json;
+	let json = "";
+	let errorMessage;
 
 	const handleFileLoad = (event) => {
 		const {parameters: parsedParameters, images: parsedImages} = parseWatchFaceBin(event.detail.buffer)
-		parameters = parsedParameters
-		json = JSON.stringify(parameters, null, 2)
+		json = JSON.stringify(parsedParameters, null, 2)
 		images = parsedImages
 	};
 
+	$: if (json) {
+		try {
+			parameters = json && JSON.parse(json)
+			errorMessage = undefined
+		} catch(e) {
+			errorMessage = e
+		}
+	}
+
 	const exportBinFile = () => {
-		const binFile = writeWatchFaceBin(JSON.parse(json), images)
+		const binFile = writeWatchFaceBin(parameters, images)
 		startFileDownload(binFile, 'application/octet-stream', "watchface.bin");
 	}
 </script>
 <div class="editor">
-	<ToolBar on:fileLoad={handleFileLoad} on:export={exportBinFile} showExportButton={parameters}></ToolBar>
-
-	{#if parameters}
-		<pre class="json-editor" contenteditable="true" spellcheck="false" bind:textContent={json}></pre>
-	{/if}
+	<ToolBar on:fileLoad={handleFileLoad} on:click={exportBinFile} showExportButton={parameters}/>
+	<div class="middle-area">
+		<PreviewTab parameters={parameters} images={images}/>
+		<div class="json-editor">
+			<pre class="json-text-area" contenteditable="true" spellcheck="false" bind:textContent={json}></pre>
+			{#if errorMessage}
+				<div class="error-message">{errorMessage}</div>
+			{/if}
+		</div>
+	</div>
 
 	<ResourceImagesBar images={images}/>
 </div>
@@ -37,13 +50,19 @@
 		padding: 0;
 	}
 	.editor {
-		height: 100%;
+		height: 100vh;
 	}
-	.json-editor {
+	.middle-area {
 		height: calc(100vh - 210px - 50px);
-		margin: 0;
+		display: flex;
 	}
 	.json-editor {
-		overflow-y:auto;
+		height: 100%;
+		margin: 0;
+		flex-grow: 1;
+	}
+	.json-text-area {
+		height: calc(100% - 50px);
+		overflow: auto;
 	}
 </style>

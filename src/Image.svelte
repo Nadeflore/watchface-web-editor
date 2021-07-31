@@ -1,6 +1,7 @@
 <script>
 	export let image;
 	export let displaySize = undefined;
+	export let position = undefined;
 
 	import { onMount } from 'svelte';
 	
@@ -23,6 +24,12 @@
 	$: if (displaySize && canvas) {
 		canvas.style.width = displaySize.width + "px"
 		canvas.style.height = displaySize.height + "px"
+	}
+
+	$: if (position && canvas) {
+		canvas.style.position = "absolute"
+		canvas.style.left = position.x + "px"
+		canvas.style.top = position.y + "px"
 	}
 </script>
 

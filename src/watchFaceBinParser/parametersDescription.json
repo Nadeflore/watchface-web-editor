@@ -2,9 +2,9 @@
   "parameters": {
     "2:Background": {
       "1:Image": "Image",
-      "3:Preview1": "Image",
-      "4:Preview2": "Image",
-      "5:Preview3": "Image"
+      "3:PreviewEN": "Image",
+      "4:PreviewCN": "Image",
+      "5:PreviewCN2": "Image"
     },
     "3:Time": {
       "1:Hours": {
@@ -17,13 +17,13 @@
       },
       "5:DelimiterImage" : "Image",
       "6:TimeDelimiterImage" : "Image",
-      "7:SunsetTime": "Number",
+      "7:SunsetTimeNumber": "Number",
       "8:SunsetTimeDelimiterImage": "imgid",
-      "9:SunriseTime": "Number",
+      "9:SunriseTimeNumber": "Number",
       "10:SunriseTimeDelimiterImage": "imgid",
-      "11:UnknownV11": "int",
-      "12:SunsetNoTime": "Image",
-      "13:SunriseNoTime": "Image"
+      "11:DisplayMinutesFirst": "bool",
+      "12:SunsetNoDataImage": "Image",
+      "13:SunriseNoDataImage": "Image"
     },
     "4:Activity": {
       "1:Steps": {
@@ -100,24 +100,25 @@
           },
           "2:OneLine": {
             "1:Number": "Number",
-            "2:MinusSignImageIndex": "imgid",
+            "2:MinusImageIndex": "imgid",
             "3:DelimiterImageIndex": "imgid",
-            "4:AppendDegreesForBoth": "bool"
+            "4:AppendSuffixToAll": "bool",
+            "5:SuffixImageIndex": "imgid"
           }
         }
       },
       "4:Humidity": {
         "1:Number": "Number",
         "2:SuffixImageIndex": "imgid",
-        "3:ImageSuffix": "Image"
+        "3:ImagePosSuffix": "Image"
       },
       "5:Wind": {
         "1:Number": "Number",
-        "2:ImageSuffixEN": "imgid",
-        "3:ImageSuffixCN1": "imgid",
-        "4:ImageSuffixCN2": "imgid",
+        "2:SuffixImageIndexEN": "imgid",
+        "3:SuffixImageIndexCN": "imgid",
+        "4:SuffixImageIndexCN2": "imgid",
         "5:ImagePosSuffixEN": "Image",
-        "6:ImagePosSuffixCN1": "Image",
+        "6:ImagePosSuffixCN": "Image",
         "7:ImagePosSuffixCN2": "Image"
       },
       "6:UVIndex": {
@@ -192,9 +193,6 @@
         "8:Color": "color"
       }
     },
-    "15:CaloriesProgress": {
-      "2:LineScale": "ImageRange"
-    },
     "14:WeekDaysIcons": {
       "1:Monday": "Image",
       "2:Tuesday": "Image",
@@ -204,12 +202,19 @@
       "6:Saturday": "Image",
       "7:Sunday": "Image"
     },
+    "15:CaloriesProgress": {
+      "2:LineScale": "ImageRange",
+      "3:Linear": {
+        "1:StartImageIndex": "imgid",
+        "2:Segments": "Coordinates"
+      }
+    },
     "18:Alarm": {
       "1:Number": "Number",
       "2:DelimiterImageIndex": "imgid",
-      "3:ImageOn": "Image",
-      "4:ImageOff": "Image",
-      "5:ImageNoAlarm": "Image",
+      "3:OnImage": "Image",
+      "4:OffImage": "Image",
+      "5:NoDataImage": "Image",
       "6:UnknownV6": "int",
       "7:UnknownV7": "int"
     },
@@ -258,8 +263,8 @@
     },
     "StatusImage": {
       "1:Coordinates": "StatusPosition",
-      "2:ImageIndexOn": "imgid",
-      "3:ImageIndexOff": "imgid"
+      "2:OnImageIndex": "imgid",
+      "3:OffImageIndex": "imgid"
     },
     "StatusPosition": {
       "1:X": "int",
@@ -271,7 +276,7 @@
     "Temperature": {
         "1:Number": "Number",
         "2:MinusImageIndex": "imgid",
-        "3:DegreesImageIndex": "imgid"
+        "3:SuffixImageIndex": "imgid"
     },
     "VectorShape": {
       "1:OnlyBorder": "bool",
