@@ -1,37 +1,48 @@
 <script>
 	export let image;
 	export let id;
-	
-    import { createEventDispatcher } from 'svelte';
 
-	import ImageComponent from './Image.svelte'
-	import OpenImageButton from './OpenImageButton.svelte'
-	import { computeSizeToFitArea } from './utils'
+	import { createEventDispatcher } from "svelte";
 
-    const dispatch = createEventDispatcher();
+	import ImageComponent from "./Image.svelte";
+	import OpenImageButton from "./OpenImageButton.svelte";
+	import { computeSizeToFitArea } from "./utils";
 
-	let checkeredBackground
-	const imageDisplayAreaWidth = 80
-	const imageDisplayAreaHeight = 100
+	const dispatch = createEventDispatcher();
 
-	$: imageDisplaySize = computeSizeToFitArea(image.width, image.height, imageDisplayAreaWidth, imageDisplayAreaHeight)	
+	let checkeredBackground;
+	const imageDisplayAreaWidth = 80;
+	const imageDisplayAreaHeight = 100;
 
-	const handleFileLoad = (event) => {
-		const imageInfo = event.detail
-		image.pixels = imageInfo.pixels
-		image.width = imageInfo.width
-		image.height = imageInfo.height
-	}
+	$: imageDisplaySize = computeSizeToFitArea(
+		image.width,
+		image.height,
+		imageDisplayAreaWidth,
+		imageDisplayAreaHeight
+	);
+
+	const handleImageLoad = (event) => {
+		const imageInfo = event.detail.images[0];
+		image.pixels = imageInfo.pixels;
+		image.width = imageInfo.width;
+		image.height = imageInfo.height;
+	};
 </script>
 
 <div class="image-block">
 	<div class="id">
 		{id}
-		<OpenImageButton on:fileLoad={(e) => handleFileLoad(e)}>R</OpenImageButton>
+		<OpenImageButton on:imageLoad={(e) => handleImageLoad(e)}
+			>R</OpenImageButton
+		>
 	</div>
 	<div class="image-container">
-		<div class="checkered-background" bind:this={checkeredBackground} style="width: {imageDisplaySize.width}px; height: {imageDisplaySize.height}px">
-			<ImageComponent image={image} displaySize={imageDisplaySize}/>
+		<div
+			class="checkered-background"
+			bind:this={checkeredBackground}
+			style="width: {imageDisplaySize.width}px; height: {imageDisplaySize.height}px"
+		>
+			<ImageComponent {image} displaySize={imageDisplaySize} />
 		</div>
 	</div>
 	<div class="info">
@@ -52,10 +63,10 @@
 		height: 100px;
 		display: flex;
 		align-items: center;
-  		justify-content: center;
+		justify-content: center;
 	}
-	
-	.checkered-background {		
+
+	.checkered-background {
 		background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKAQMAAAC3/F3+AAAABlBMVEXMzMyAgIDkPTOPAAAAEElEQVQI12P4wYCC2A8gIwCK3gi8+4tyLQAAAABJRU5ErkJggg==);
 		background-repeat: repeat, repeat;
 	}

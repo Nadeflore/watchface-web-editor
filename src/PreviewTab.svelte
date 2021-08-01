@@ -80,6 +80,7 @@
     .display-area {
         position: relative;
         border: 1px solid black;
+        background-color: black;
         width: 124px;
         height: 294px;
         overflow: hidden;

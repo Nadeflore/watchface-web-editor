@@ -1,23 +1,25 @@
 <script>
-    import OpenFileButton from './OpenFileButton.svelte'
-    import { createEventDispatcher } from 'svelte';
+	export let multiple = undefined;
+	import OpenFileButton from "./OpenFileButton.svelte";
+	import { createEventDispatcher } from "svelte";
+	import { convertDataUrlToImagePixels } from "./utils";
 
-    const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher();
 
 	const handleFileSelected = (event) => {
-		const imgDataUrl = event.detail.data
-		const img = new Image();
-		img.onload = function() {
-			const canvas = document.createElement('canvas')
-			canvas.width = this.width
-			canvas.height = this.height
-			const context = canvas.getContext('2d')
-			context.drawImage(this, 0, 0)
-			const pixels = context.getImageData(0, 0, this.width, this.height).data
-            dispatch("fileLoad", {pixels, height: this.height, width: this.width})
-		}
-		img.src = imgDataUrl
-	}
+		const promises = event.detail.files.map((file) =>
+			convertDataUrlToImagePixels(file.data)
+		);
+
+		Promise.all(promises).then((images) =>
+			dispatch("imageLoad", { images })
+		);
+	};
 </script>
 
-<OpenFileButton accept=".jpg, .jpeg, .png, ,bmp" on:fileLoad={(e) => handleFileSelected(e)}><slot></slot></OpenFileButton>
+<OpenFileButton
+	{multiple}
+	accept=".jpg, .jpeg, .png, ,bmp"
+	on:fileLoad={(e) => handleFileSelected(e)}
+	><slot />
+</OpenFileButton>

@@ -1,16 +1,21 @@
 <script>
     import OpenFileButton from "./OpenFileButton.svelte";
+    import JSZip from "jszip";
     import { parametersJson, parameters, images, errorMessage } from "./stores";
     import {
         parseWatchFaceBin,
         writeWatchFaceBin,
     } from "./watchFaceBinParser/watchFaceBinParser";
-    import { startFileDownload } from "./utils";
+    import {
+        startFileDownload,
+        convertImagePixelsToPngDataUrl,
+        removePrefixFromDataUrl,
+    } from "./utils";
 
     function handleBinFileLoad(event) {
         try {
             const { parameters: parsedParameters, images: parsedImages } =
-                parseWatchFaceBin(event.detail.data);
+                parseWatchFaceBin(event.detail.files[0].data);
             errorMessage.set(null);
             parametersJson.set(JSON.stringify(parsedParameters, null, 2));
             images.set(parsedImages);
@@ -31,6 +36,24 @@
             errorMessage.set(e);
         }
     }
+
+    function handleAllImagesExport() {
+        const zip = new JSZip();
+        const imagesFolder = zip.folder("images");
+        for (const [i, image] of $images.entries()) {
+            const base64Image = removePrefixFromDataUrl(
+                convertImagePixelsToPngDataUrl(image)
+            );
+            imagesFolder.file(`${(i + "").padStart(4, "0")}.png`, base64Image, {
+                base64: true,
+            });
+        }
+        zip.generateAsync({ type: "blob" }).then(function (content) {
+            startFileDownload(content, "application/zip", "images.zip");
+        });
+    }
+
+    function handleImportImages(e) {}
 </script>
 
 <div class="toolbar">
@@ -41,7 +64,7 @@
     >
     <button on:click={handleBinFileExport}>Export bin file</button>
     {#if $images.length}
-        <button on:click>Export all images</button>
+        <button on:click={handleAllImagesExport}>Export all images</button>
     {/if}
 </div>
 
