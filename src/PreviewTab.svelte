@@ -1,14 +1,9 @@
 <script>
-    export let parameters
-    export let images
+    import Image from "./Image.svelte";
+    import { generatePreview } from "./watchFaceBinParser/previewGenerator";
+    import { parameters, images, errorMessage } from "./stores";
 
-    import Image from './Image.svelte'
-    import { generatePreview } from './watchFaceBinParser/previewGenerator'
-    import { createEventDispatcher } from 'svelte';
-
-    const dispatch = createEventDispatcher();
-
-    let imagesToDisplay = []
+    let imagesToDisplay = [];
 
     const status = {
         hours: 12,
@@ -43,28 +38,34 @@
         animationTime: 0,
         locale: {
             lang: "EN",
-            imperial: false
+            imperial: false,
+        },
+    };
+
+    $: {
+        try {
+            imagesToDisplay = generatePreview($parameters, $images, status).map(
+                (e) => ({ image: $images[e.imageId], position: e.position })
+            );
+        } catch (e) {
+            errorMessage.set(e);
         }
     }
 
-    $: {
-		try {
-			imagesToDisplay = generatePreview(parameters, images, status).map(e => ({image: images[e.imageId], position: e.position }))
-		} catch(e) {
-            dispatch("error", {message: e})
-		}
-	}
-
-
-    setInterval(() => {status.animationTime += 50}, 50);
+    setInterval(() => {
+        status.animationTime += 50;
+    }, 50);
 </script>
+
 <div class="preview-tab">
     <div class="display-area">
         {#each imagesToDisplay as imageToDisplay}
-            <Image image={imageToDisplay.image}  position={imageToDisplay.position}/>
+            <Image
+                image={imageToDisplay.image}
+                position={imageToDisplay.position}
+            />
         {/each}
     </div>
-
 </div>
 
 <style>
@@ -73,7 +74,7 @@
         height: 100%;
         display: flex;
         align-items: center;
-  		justify-content: center;
+        justify-content: center;
     }
 
     .display-area {
