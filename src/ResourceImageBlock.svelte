@@ -2,28 +2,36 @@
 	export let image;
 	export let id;
 	
+    import { createEventDispatcher } from 'svelte';
+
+	import ImageComponent from './Image.svelte'
+	import OpenImageButton from './OpenImageButton.svelte'
 	import { computeSizeToFitArea } from './utils'
 
-	import Image from './Image.svelte'
+    const dispatch = createEventDispatcher();
 
 	let checkeredBackground
 	const imageDisplayAreaWidth = 80
 	const imageDisplayAreaHeight = 100
 
-	$: imageDisplaySize = computeSizeToFitArea(image.width, image.height, imageDisplayAreaWidth, imageDisplayAreaHeight)
+	$: imageDisplaySize = computeSizeToFitArea(image.width, image.height, imageDisplayAreaWidth, imageDisplayAreaHeight)	
 
-	$: if (checkeredBackground) {
-		checkeredBackground.style.width = imageDisplaySize.width + "px"
-		checkeredBackground.style.height = imageDisplaySize.height + "px"
+	const handleFileLoad = (event) => {
+		const imageInfo = event.detail
+		image.pixels = imageInfo.pixels
+		image.width = imageInfo.width
+		image.height = imageInfo.height
 	}
-
 </script>
 
 <div class="image-block">
-	<div class="id">{id}</div>
+	<div class="id">
+		{id}
+		<OpenImageButton on:fileLoad={(e) => handleFileLoad(e)}>R</OpenImageButton>
+	</div>
 	<div class="image-container">
-		<div class="checkered-background" bind:this={checkeredBackground}>
-			<Image image={image} displaySize={imageDisplaySize}/>
+		<div class="checkered-background" bind:this={checkeredBackground} style="width: {imageDisplaySize.width}px; height: {imageDisplaySize.height}px">
+			<ImageComponent image={image} displaySize={imageDisplaySize}/>
 		</div>
 	</div>
 	<div class="info">

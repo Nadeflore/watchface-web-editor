@@ -382,8 +382,11 @@ export function generatePreview(parameters, images, status) {
                 break
 
             case "animation":
+                
                 for(const animation of Array.isArray(parameter)? parameter: [parameter]) {
-                    const currentFrame = Math.round(value/animation.Speed)
+                    // Real watch can't display faster than about 80ms interval
+                    const speed = Math.max(animation.Speed, 80)
+                    const currentFrame = Math.round(value/speed)
                     const currentFrameLooped = currentFrame % animation.AnimationImages.ImagesCount
 
                     // display only if repeat count is not exceeded
@@ -392,6 +395,17 @@ export function generatePreview(parameters, images, status) {
                 }
 
                 break
+        }
+    }
+
+    // Check all imagesIds are valids
+    for (const imageInfo of result) {
+        if (typeof imageInfo.imageId !== 'number') {
+            throw new Error("Invalid image Id")
+        }
+
+        if (imageInfo.imageId >= images.length) {
+            throw new Error("Image Id out of range")
         }
     }
 

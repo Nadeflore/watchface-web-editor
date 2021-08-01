@@ -4,6 +4,9 @@
 
     import Image from './Image.svelte'
     import { generatePreview } from './watchFaceBinParser/previewGenerator'
+    import { createEventDispatcher } from 'svelte';
+
+    const dispatch = createEventDispatcher();
 
     let imagesToDisplay = []
 
@@ -44,10 +47,16 @@
         }
     }
 
-    $: imagesToDisplay = generatePreview(parameters, images, status).map(e => ({image: images[e.imageId], position: e.position }))
+    $: {
+		try {
+			imagesToDisplay = generatePreview(parameters, images, status).map(e => ({image: images[e.imageId], position: e.position }))
+		} catch(e) {
+            dispatch("error", {message: e})
+		}
+	}
 
 
-    setInterval(() => {status.animationTime += 50}, 100);
+    setInterval(() => {status.animationTime += 50}, 50);
 </script>
 <div class="preview-tab">
     <div class="display-area">

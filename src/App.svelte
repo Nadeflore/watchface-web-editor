@@ -11,7 +11,7 @@
 	let errorMessage;
 
 	const handleFileLoad = (event) => {
-		const {parameters: parsedParameters, images: parsedImages} = parseWatchFaceBin(event.detail.buffer)
+		const {parameters: parsedParameters, images: parsedImages} = parseWatchFaceBin(event.detail.data)
 		json = JSON.stringify(parsedParameters, null, 2)
 		images = parsedImages
 	};
@@ -33,7 +33,7 @@
 <div class="editor">
 	<ToolBar on:fileLoad={handleFileLoad} on:click={exportBinFile} showExportButton={parameters}/>
 	<div class="middle-area">
-		<PreviewTab parameters={parameters} images={images}/>
+		<PreviewTab parameters={parameters} images={images} on:error={(e) => {errorMessage = e.detail.message}}/>
 		<div class="json-editor">
 			<pre class="json-text-area" contenteditable="true" spellcheck="false" bind:textContent={json}></pre>
 			{#if errorMessage}

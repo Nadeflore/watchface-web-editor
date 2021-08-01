@@ -3,8 +3,6 @@
 	export let displaySize = undefined;
 	export let position = undefined;
 
-	import { onMount } from 'svelte';
-	
 	let canvas;
 
 	$: if (canvas) {

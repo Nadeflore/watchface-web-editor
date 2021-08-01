@@ -5,7 +5,7 @@
 </script>
 
 <div class="toolbar">
-    <OpenFileButton on:fileLoad>Open bin file</OpenFileButton>
+    <OpenFileButton accept=".bin" readAsArrayBuffer on:fileLoad>Open bin file</OpenFileButton>
     {#if showExportButton}
         <button on:click>Export bin file</button>
     {/if}
