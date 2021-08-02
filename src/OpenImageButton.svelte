@@ -8,7 +8,10 @@
 
 	const handleFileSelected = (event) => {
 		const promises = event.detail.files.map((file) =>
-			convertDataUrlToImagePixels(file.data).catch((e) => {
+			convertDataUrlToImagePixels(file.data, {
+				width: 126,
+				height: 294,
+			}).catch((e) => {
 				throw new Error(`Invalid image: ${file.name}`);
 			})
 		);

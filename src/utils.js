@@ -29,6 +29,11 @@ export function startFileDownload(fileContent, mimeType, filename) {
 
 }
 
+/**
+ * Convert pixels buffer to a png image
+ * @param {{pixels: Uint8Array, width: number, height: number}} image 
+ * @returns {string} Data url of the png image
+ */
 export function convertImagePixelsToPngDataUrl(image) {
   // create a canvas to hold the image
   const canvas = document.createElement('canvas')
@@ -46,30 +51,62 @@ export function convertImagePixelsToPngDataUrl(image) {
   return canvas.toDataURL("img/png")
 }
 
-export function convertDataUrlToImagePixels(imgDataUrl) {
+/**
+ * Convert a dataUrl of an image to pixels data
+ * @param {string} imgDataUrl 
+ * @param {{width: number, height: number}} maxSize When given, the image will be resized if bigger than the specified size
+ * @returns {{pixels: Uint8Array, width: number, height: number}}
+ */
+export function convertDataUrlToImagePixels(imgDataUrl, maxSize = undefined) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = function () {
+      let width = this.width;
+      let height = this.height;
+      if (maxSize && (width > maxSize.width || height > maxSize.height)) {
+        ({ width, height } = computeSizeToFitArea(width, height, maxSize.width, maxSize.height))
+      }
+
       const canvas = document.createElement("canvas");
-      canvas.width = this.width;
-      canvas.height = this.height;
+      canvas.width = width;
+      canvas.height = height;
       const context = canvas.getContext("2d");
-      context.drawImage(this, 0, 0);
+      context.imageSmoothingQuality = "high"
+      context.drawImage(this, 0, 0, width, height);
       const pixels = context.getImageData(
         0,
         0,
-        this.width,
-        this.height
+        width,
+        height
       ).data;
       resolve({
         pixels,
-        height: this.height,
-        width: this.width,
+        height: height,
+        width: width,
       });
     };
     img.onerror = function (e) { reject("Unable to read image") };
     img.src = imgDataUrl;
   })
+}
+
+export function resizeImage(image, newWidth, newHeight) {
+  const canvas = document.createElement("canvas");
+  canvas.width = newWidth;
+  canvas.height = newHeight;
+  const context = canvas.getContext("2d");
+  context.drawImage(this, 0, 0);
+  const pixels = context.getImageData(
+    0,
+    0,
+    newWidth,
+    newHeight
+  ).data;
+  return {
+    pixels,
+    width: newWidth,
+    height: newHeight,
+  }
 }
 
 /**
@@ -97,9 +134,9 @@ export function computeSizeToFitArea(imageWidth, imageHeight, areaWidth, areaHei
 
   if (imageAspectRatio > areaAspectRatio) {
     // image is wider
-    return { width: areaWidth, height: areaWidth / imageAspectRatio }
+    return { width: areaWidth, height: Math.round(areaWidth / imageAspectRatio) }
   } else {
     // image is taller
-    return { width: areaHeight * imageAspectRatio, height: areaHeight }
+    return { width: Math.round(areaHeight * imageAspectRatio), height: areaHeight }
   }
 }
