@@ -8,7 +8,9 @@
 
 	const handleFileSelected = (event) => {
 		const promises = event.detail.files.map((file) =>
-			convertDataUrlToImagePixels(file.data)
+			convertDataUrlToImagePixels(file.data).catch((e) => {
+				throw new Error(`Invalid image: ${file.name}`);
+			})
 		);
 
 		Promise.all(promises).then((images) =>

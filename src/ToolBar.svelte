@@ -1,5 +1,6 @@
 <script>
     import OpenFileButton from "./OpenFileButton.svelte";
+    import OpenImageButton from "./OpenImageButton.svelte";
     import JSZip from "jszip";
     import { parametersJson, parameters, images, errorMessage } from "./stores";
     import {
@@ -53,7 +54,9 @@
         });
     }
 
-    function handleImportImages(e) {}
+    function handleAllImagesImport(e) {
+        images.set(e.detail.images);
+    }
 </script>
 
 <div class="toolbar">
@@ -66,6 +69,9 @@
     {#if $images.length}
         <button on:click={handleAllImagesExport}>Export all images</button>
     {/if}
+    <OpenImageButton multiple on:imageLoad={handleAllImagesImport}
+        >Import images</OpenImageButton
+    >
 </div>
 
 <style>

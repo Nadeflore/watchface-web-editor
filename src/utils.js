@@ -47,7 +47,7 @@ export function convertImagePixelsToPngDataUrl(image) {
 }
 
 export function convertDataUrlToImagePixels(imgDataUrl) {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = function () {
       const canvas = document.createElement("canvas");
@@ -67,6 +67,7 @@ export function convertDataUrlToImagePixels(imgDataUrl) {
         width: this.width,
       });
     };
+    img.onerror = function (e) { reject("Unable to read image") };
     img.src = imgDataUrl;
   })
 }
