@@ -1,0 +1,9 @@
+{
+    "name": "Xiaomi Mi Band 6",
+    "screen": {
+        "width": 152,
+        "height": 486,
+        "roundedBorder": 76
+    },
+    "fileType": "UIHH"
+}

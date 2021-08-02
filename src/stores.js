@@ -1,5 +1,6 @@
 import { writable, derived, get } from 'svelte/store';
 
+export const watchModelDescriptor = writable(undefined);
 export const images = writable([]);
 // Parameters json is the source of truth
 export const parametersJson = writable("{}");

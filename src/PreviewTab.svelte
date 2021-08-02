@@ -1,7 +1,12 @@
 <script>
     import Image from "./Image.svelte";
     import { generatePreview } from "./watchFaceBinParser/previewGenerator";
-    import { parameters, images, errorMessage } from "./stores";
+    import {
+        watchModelDescriptor,
+        parameters,
+        images,
+        errorMessage,
+    } from "./stores";
 
     let imagesToDisplay = [];
 
@@ -52,20 +57,28 @@
         }
     }
 
-    setInterval(() => {
-        status.animationTime += 50;
-    }, 50);
+    // setInterval(() => {
+    //     status.animationTime += 50;
+    // }, 50);
 </script>
 
 <div class="preview-tab">
-    <div class="display-area">
-        {#each imagesToDisplay as imageToDisplay}
-            <Image
-                image={imageToDisplay.image}
-                position={imageToDisplay.position}
-            />
-        {/each}
-    </div>
+    {#if $watchModelDescriptor}
+        <div
+            class="display-area"
+            style="width: {$watchModelDescriptor.screen
+                .width}px; height: {$watchModelDescriptor.screen
+                .height}px; border-radius: {$watchModelDescriptor.screen
+                .roundedBorder}px"
+        >
+            {#each imagesToDisplay as imageToDisplay}
+                <Image
+                    image={imageToDisplay.image}
+                    position={imageToDisplay.position}
+                />
+            {/each}
+        </div>
+    {/if}
 </div>
 
 <style>
@@ -75,11 +88,11 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        overflow: auto;
     }
 
     .display-area {
         position: relative;
-        border: 1px solid black;
         background-color: black;
         width: 124px;
         height: 294px;

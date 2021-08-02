@@ -1,9 +1,17 @@
 <script>
     import OpenFileButton from "./OpenFileButton.svelte";
     import OpenImageButton from "./OpenImageButton.svelte";
+    import { onMount } from "svelte";
     import JSZip from "jszip";
-    import { parametersJson, parameters, images, errorMessage } from "./stores";
     import {
+        watchModelDescriptor,
+        parametersJson,
+        parameters,
+        images,
+        errorMessage,
+    } from "./stores";
+    import {
+        getAvailableModels,
         parseWatchFaceBin,
         writeWatchFaceBin,
     } from "./watchFaceBinParser/watchFaceBinParser";
@@ -13,10 +21,20 @@
         removePrefixFromDataUrl,
     } from "./utils";
 
+    let models = [];
+
+    onMount(() => {
+        models = getAvailableModels();
+        watchModelDescriptor.set(models[0]);
+    });
+
     function handleBinFileLoad(event) {
         try {
             const { parameters: parsedParameters, images: parsedImages } =
-                parseWatchFaceBin(event.detail.files[0].data);
+                parseWatchFaceBin(
+                    event.detail.files[0].data,
+                    $watchModelDescriptor.fileType
+                );
             errorMessage.set(null);
             parametersJson.set(JSON.stringify(parsedParameters, null, 2));
             images.set(parsedImages);
@@ -27,7 +45,11 @@
 
     function handleBinFileExport() {
         try {
-            const binFile = writeWatchFaceBin($parameters, $images);
+            const binFile = writeWatchFaceBin(
+                $parameters,
+                $images,
+                $watchModelDescriptor.fileType
+            );
             startFileDownload(
                 binFile,
                 "application/octet-stream",
@@ -60,6 +82,13 @@
 </script>
 
 <div class="toolbar">
+    <select bind:value={$watchModelDescriptor}>
+        {#each models as model}
+            <option value={model}>
+                {model.name}
+            </option>
+        {/each}
+    </select>
     <OpenFileButton
         accept=".bin"
         readAsArrayBuffer

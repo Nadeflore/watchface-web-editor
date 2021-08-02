@@ -3,7 +3,6 @@
  */
 import { parseModule } from 'esprima';
 import { validate_each_argument } from 'svelte/internal';
-import parametersDescription from './parametersDescription.json'
 
 /**
  * Read binary parameters structure
@@ -11,10 +10,10 @@ import parametersDescription from './parametersDescription.json'
  * @param {Uint8Array} byteArray An Uint8Array containing parameters
  * @returns {object} An object containing the data
  */
- export function parseParameters(byteArray) {
+export function parseParameters(byteArray) {
 	let result = {}
 	let offset = 0
-	
+
 	// Read each key value pair, until the end of array
 	do {
 		// First value is a descriptor containing key and `hasChildren` flag
@@ -30,9 +29,9 @@ import parametersDescription from './parametersDescription.json'
 
 		// From the second byte on is the value
 		let [fieldValue, valueSize] = readVariableWidthValue(byteArray.subarray(offset))
-		
+
 		offset += valueSize
-		
+
 		if (hasChildren) {
 			// When node has children, field value is size of children
 			const childrenSize = fieldValue
@@ -43,7 +42,7 @@ import parametersDescription from './parametersDescription.json'
 			fieldValue = parseParameters(byteArray.subarray(offset, offset + childrenSize))
 			offset += childrenSize
 		}
-		
+
 		if (key in result) {
 			// duplicate key, it's a list
 			if (!Array.isArray(result[key])) {
@@ -54,7 +53,7 @@ import parametersDescription from './parametersDescription.json'
 			result[key] = fieldValue
 		}
 	} while (offset < byteArray.length);
-	
+
 	return result
 }
 
@@ -107,12 +106,12 @@ export function writeParameters(parameters) {
  *          - the value
  *          - number of bytes read from array (used to encode this value)
  */
- export function readVariableWidthValue(byteArray) {
+export function readVariableWidthValue(byteArray) {
 	let value = BigInt(0)
-	for (var i=0; i<10; i++) { // Up to a maximum of 10 bytes (Number of byte needed to represent 64 bit values (10 * 7 > 64)
+	for (var i = 0; i < 10; i++) { // Up to a maximum of 10 bytes (Number of byte needed to represent 64 bit values (10 * 7 > 64)
 		const byte = byteArray[i]
 
-		value |= BigInt(byte & 0x7f) << BigInt(i*7)
+		value |= BigInt(byte & 0x7f) << BigInt(i * 7)
 
 		if (!(byte & 0x80)) {
 			break // this is the last chunk of data
@@ -130,7 +129,7 @@ export function writeVariableWidthValue(value) {
 	const result = []
 	let value64bit = BigInt.asUintN(64, BigInt(value))
 
-	for (var i=0; i<10; i++) { // Up to a maximum of 10 bytes (Number of byte needed to represent 64 bit values (10 * 7 > 64)
+	for (var i = 0; i < 10; i++) { // Up to a maximum of 10 bytes (Number of byte needed to represent 64 bit values (10 * 7 > 64)
 		// Read lower 7 bits of value
 		let byte = Number(value64bit & 0x7Fn)
 
@@ -152,20 +151,22 @@ export function writeVariableWidthValue(value) {
 /**
  * Convert parameters ids to human readable names
  * @param {object} parameters A parameters object containing ids as keys
+ * @param {object} fileStructureInfo A file structure descriptor containing the description of the params
  * @returns {object} A copy of the parameters object with ids replaced by names
  */
-export function convertIdsToNames(parameters) {
-	const converter = new ParametersNameConverter(parametersDescription)
+export function convertIdsToNames(parameters, fileStructureInfo) {
+	const converter = new ParametersNameConverter(fileStructureInfo)
 	return converter.convertIdToName(parameters)
 }
 
 /**
  * Convert human readable names to parameters ids
  * @param {object} parameters A parameters object containing names as keys
+ * @param {object} fileStructureInfo  A file structure descriptor containing the description of the params
  * @returns {object} A copy of the parameters object with names replaced by ids
  */
- export function convertNamesToIds(parameters) {
-	const converter = new ParametersNameConverter(parametersDescription)
+export function convertNamesToIds(parameters, fileStructureInfo) {
+	const converter = new ParametersNameConverter(fileStructureInfo)
 	return converter.convertNameToId(parameters)
 }
 
@@ -184,41 +185,41 @@ class ParametersNameConverter {
 
 	// Convert description "id:name": type to "id": {name: "name", type: type}
 	// to be used to convert from id to name
-    convertParametersDescriptionToIdAsKey(description) {
+	convertParametersDescriptionToIdAsKey(description) {
 		// Base case
 		if (typeof description !== "object") {
 			return description
 		}
-		
+
 		const result = {}
 		for (const [key, value] of Object.entries(description)) {
 			if (!key.includes(":")) {
 				throw new Error(`Parameter description is invalid : ${key}`)
 			}
 			const [id, name] = key.split(":")
-			result[id] = {name, type: this.convertParametersDescriptionToIdAsKey(value)}
+			result[id] = { name, type: this.convertParametersDescriptionToIdAsKey(value) }
 		}
-		
+
 		return result
 	}
 
 	// Convert description "id:name": type to "name": {id: "id", type: type}
 	// to be used to convert from name to id
-    convertParametersDescriptionToNameAsKey(description) {
+	convertParametersDescriptionToNameAsKey(description) {
 		// Base case
 		if (typeof description !== "object") {
 			return description
 		}
-		
+
 		const result = {}
 		for (const [key, value] of Object.entries(description)) {
 			if (!key.includes(":")) {
 				throw new Error(`Parameter description is invalid : ${key}`)
 			}
 			const [id, name] = key.split(":")
-			result[name] = {id, type: this.convertParametersDescriptionToNameAsKey(value)}
+			result[name] = { id, type: this.convertParametersDescriptionToNameAsKey(value) }
 		}
-		
+
 		return result
 	}
 
@@ -237,7 +238,7 @@ class ParametersNameConverter {
 		if (typeof parametersList === "number") {
 			return formatParameterValue(parametersList, parametersDescription)
 		}
-		
+
 		if (typeof parametersDescription !== "object") {
 			console.log(parametersDescription)
 			throw new Error("Parameter description does not match parameter")
@@ -259,19 +260,19 @@ class ParametersNameConverter {
 					object[key] = value
 					continue
 				}
-				let {name, type} = parametersDescription[key]
-				
+				let { name, type } = parametersDescription[key]
+
 				// If a generic type is referenced
 				if (typeof type !== "object" && type in this.parametersTypesDescriptionFromId) {
 					type = this.parametersTypesDescriptionFromId[type]
 				}
-				
+
 				object[name] = this.convertIdToName(value, type)
 			}
 
 			result.push(object)
 		}
-		
+
 		// Unpack if only 1 object
 		if (result.length === 1) {
 			result = result[0]
@@ -279,12 +280,12 @@ class ParametersNameConverter {
 		return result
 	}
 
-		/**
-	 * Convert parameters human readable names to ids using the provided parameters description
-	 * @param {object|object[]} parameters A parameters object containing name as keys, or an Array of parameters object
-	 * @param {object} parametersDescription Optional, if falsy, will use the root parameters description
-	 * @returns {object|object[]} A copy of the paramters object with name replaced by ids
-	 */
+	/**
+ * Convert parameters human readable names to ids using the provided parameters description
+ * @param {object|object[]} parameters A parameters object containing name as keys, or an Array of parameters object
+ * @param {object} parametersDescription Optional, if falsy, will use the root parameters description
+ * @returns {object|object[]} A copy of the paramters object with name replaced by ids
+ */
 	convertNameToId(parametersList, parametersDescription) {
 		if (!parametersDescription) {
 			parametersDescription = this.parametersDescriptionFromName
@@ -294,7 +295,7 @@ class ParametersNameConverter {
 		if (typeof parametersList !== "object" && !Array.isArray(parametersList)) {
 			return parseParameterValue(parametersList, parametersDescription)
 		}
-		
+
 		if (typeof parametersDescription !== "object") {
 			console.log(parametersDescription)
 			throw new Error("Parameter description does not match parameter")
@@ -320,19 +321,19 @@ class ParametersNameConverter {
 					object[key] = value
 					continue
 				}
-				let {id, type} = parametersDescription[key]
-				
+				let { id, type } = parametersDescription[key]
+
 				// If a generic type is referenced
 				if (typeof type !== "object" && type in this.parametersTypesDescriptionFromName) {
 					type = this.parametersTypesDescriptionFromName[type]
 				}
-				
+
 				object[id] = this.convertNameToId(value, type)
 			}
 
 			result.push(object)
 		}
-		
+
 		// Unpack if only 1 object
 		if (result.length === 1) {
 			result = result[0]
@@ -343,21 +344,21 @@ class ParametersNameConverter {
 
 
 const alignmentValues = [
-	{value: 2, name:"Left"},
-	{value: 4, name:"Right"},
-	{value: 8, name:"HCenter"},
-	{value: 16, name:"Top"},
-	{value: 32, name:"Bottom"},
-	{value: 64, name:"VCenter"},
-	{value: 18, name:"TopLeft"},
-	{value: 34, name:"BottomLeft"},
-	{value: 66, name:"CenterLeft"},
-	{value: 20, name:"TopRight"},
-	{value: 36, name:"BottomRight"},
-	{value: 68, name:"CenterRight"},
-	{value: 24, name:"TopCenter"},
-	{value: 40, name:"BottomCenter"},
-	{value: 72, name:"Center"}
+	{ value: 2, name: "Left" },
+	{ value: 4, name: "Right" },
+	{ value: 8, name: "HCenter" },
+	{ value: 16, name: "Top" },
+	{ value: 32, name: "Bottom" },
+	{ value: 64, name: "VCenter" },
+	{ value: 18, name: "TopLeft" },
+	{ value: 34, name: "BottomLeft" },
+	{ value: 66, name: "CenterLeft" },
+	{ value: 20, name: "TopRight" },
+	{ value: 36, name: "BottomRight" },
+	{ value: 68, name: "CenterRight" },
+	{ value: 24, name: "TopCenter" },
+	{ value: 40, name: "BottomCenter" },
+	{ value: 72, name: "Center" }
 ]
 
 
@@ -369,7 +370,7 @@ const alignmentValues = [
  * @throws Error When type is unknow
  */
 export function formatParameterValue(value, type) {
-	switch(type) {
+	switch (type) {
 		case "int":
 		case "imgid":
 			return value
@@ -395,7 +396,7 @@ export function formatParameterValue(value, type) {
  * @returns {number} A signed integer representing the value
  */
 export function parseParameterValue(representation, type) {
-	switch(type) {
+	switch (type) {
 		case "int":
 		case "imgid":
 			return representation

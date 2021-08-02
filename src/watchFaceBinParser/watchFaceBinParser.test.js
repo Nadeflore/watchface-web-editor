@@ -1,4 +1,5 @@
 import { parseWatchFaceBin, writeWatchFaceBin } from './watchFaceBinParser'
+import fileStructureInfoUIHH from './models/fileTypes/UIHH.json'
 
 describe('parseWatchFaceBin()', () => {
     it('parse simple bin', () => {
@@ -20,7 +21,7 @@ describe('parseWatchFaceBin()', () => {
                 // Image
                 0x42, 0x4D, 0x10, 0x00, 0x02, 0x00, 0x01, 0x00, 0x08, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00,
                 0x11, 0x21, 0x31, 0x41, 0x12, 0x22, 0x32, 0x42
-            ]).buffer)).toStrictEqual(
+            ]).buffer, fileStructureInfoUIHH)).toStrictEqual(
                 {
                     "parameters": { "Background": { "Image": { "X": 0, "Y": 0, "ImageIndex": 0 } } },
                     "images": [
@@ -54,7 +55,8 @@ describe('writeWatchFaceBin()', () => {
                     "bitsPerPixel": 32,
                     "pixelFormat": 0x10
                 }
-            ]
+            ],
+            fileStructureInfoUIHH
         )).toStrictEqual(
             new Uint8Array(
                 [

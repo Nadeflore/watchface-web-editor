@@ -71,11 +71,13 @@ describe('writeParameters()', () => {
         )).toStrictEqual(Uint8Array.of(0x80, 0x02, 0x04))
     })
     it('raise error if value is not a number', () => {
-        expect(() => {writeParameters(
-            {
-                "1": "hello"
-            }
-        )}).toThrowError("Value is invalid")
+        expect(() => {
+            writeParameters(
+                {
+                    "1": "hello"
+                }
+            )
+        }).toThrowError("Value is invalid")
     })
 })
 
@@ -121,17 +123,37 @@ describe('writeVariableWidthValue()', () => {
     })
 })
 
+const PARAMETERS_DESCRIPTOR_FOR_TESTS = {
+    "parameters": {
+        "2:Background": {
+            "1:Image": "Image",
+            "3:PreviewEN": "Image",
+            "4:PreviewCN": "Image",
+            "5:PreviewCN2": "Image"
+        }
+    },
+    "types": {
+        "Image": {
+            "1:X": "int",
+            "2:Y": "int",
+            "3:ImageIndex": "imgid"
+        }
+    }
+}
+
 describe('convertIdsToNames()', () => {
     it('convert ids to names', () => {
         expect(convertIdsToNames(
-            { "2": { "1": { "1": 0, "2": 0, "3": 0 } } }
+            { "2": { "1": { "1": 0, "2": 0, "3": 0 } } },
+            PARAMETERS_DESCRIPTOR_FOR_TESTS
         )).toStrictEqual(
             { "Background": { "Image": { "X": 0, "Y": 0, "ImageIndex": 0 } } }
         )
     })
     it('convert ids in lists', () => {
         expect(convertIdsToNames(
-            { "2": { "1": [{ "1": 0, "2": 0, "3": 0 }, { "1": 0, "2": 0, "3": 1 }] } }
+            { "2": { "1": [{ "1": 0, "2": 0, "3": 0 }, { "1": 0, "2": 0, "3": 1 }] } },
+            PARAMETERS_DESCRIPTOR_FOR_TESTS
         )).toStrictEqual(
             { "Background": { "Image": [{ "X": 0, "Y": 0, "ImageIndex": 0 }, { "X": 0, "Y": 0, "ImageIndex": 1 }] } }
         )
@@ -141,14 +163,16 @@ describe('convertIdsToNames()', () => {
 describe('convertNamesToIds()', () => {
     it('convert names to ids', () => {
         expect(convertNamesToIds(
-            { "Background": { "Image": { "X": 0, "Y": 0, "ImageIndex": 0 } } }
+            { "Background": { "Image": { "X": 0, "Y": 0, "ImageIndex": 0 } } },
+            PARAMETERS_DESCRIPTOR_FOR_TESTS
         )).toStrictEqual(
             { "2": { "1": { "1": 0, "2": 0, "3": 0 } } }
         )
     })
     it('convert names in lists', () => {
         expect(convertNamesToIds(
-            { "Background": { "Image": [{ "X": 0, "Y": 0, "ImageIndex": 0 }, { "X": 0, "Y": 0, "ImageIndex": 1 }] } }
+            { "Background": { "Image": [{ "X": 0, "Y": 0, "ImageIndex": 0 }, { "X": 0, "Y": 0, "ImageIndex": 1 }] } },
+            PARAMETERS_DESCRIPTOR_FOR_TESTS
         )).toStrictEqual(
             { "2": { "1": [{ "1": 0, "2": 0, "3": 0 }, { "1": 0, "2": 0, "3": 1 }] } }
         )

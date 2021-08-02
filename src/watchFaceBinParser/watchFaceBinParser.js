@@ -1,31 +1,46 @@
 import { parseParameters, writeParameters, convertIdsToNames, convertNamesToIds } from './parametersParser'
 import { parseImage, writeImage } from './imageParser'
 
-const HEADER_SIZE = 0x57;
+import UIHH from './models/fileTypes/UIHH.json'
+import miband5 from './models/miband5.json'
+import miband6 from './models/miband6.json'
 
+const fileTypes = { UIHH }
+const watchModelsDescriptor = [miband5, miband6]
+
+export function getAvailableModels() {
+    for (const model of watchModelsDescriptor) {
+        // Replace file type name with actual fileType data
+        model.fileType = fileTypes[model.fileType]
+    }
+    return watchModelsDescriptor
+}
 
 /**
  * Parse a watchface bin file parameters and images
  * @param {ArrayBuffer} buffer An arrayBuffer of a watchface bin file
+ * @param {object} fileStructureInfo A file structure descriptor for this bin format
  * @returns {{parameters: object, images: object[]}} An object containing the parameters and images found in the file
  */
-export function parseWatchFaceBin(buffer) {
+export function parseWatchFaceBin(buffer, fileStructureInfo) {
+    const headerSize = fileStructureInfo.header.length
     let offset = 0;
-
     // Read header
-    const header = new DataView(buffer, offset, HEADER_SIZE)
+    const header = new DataView(buffer, offset, headerSize)
     // Offset is now at parametersInfo
-    offset += HEADER_SIZE
+    offset += headerSize
 
     // Check signature
-    if (header.getUint32(0, false) !== 0x55494848) {
-        throw new Error(`Invalid signature`)
+    const fileSignature = Array.from(new Uint8Array(buffer, 0, fileStructureInfo.signatureSize))
+    const expectedSignature = fileStructureInfo.header.slice(0, fileStructureInfo.signatureSize)
+    if (JSON.stringify(fileSignature) !== JSON.stringify(expectedSignature)) {
+        throw new Error(`Invalid file signature, expected ${expectedSignature} but found ${fileSignature}`)
     }
 
     // Size of the biggest paramater
     // Parameters with a size bigger than this will be ignored by the watch
-    const parameterBufferSize = header.getUint32(HEADER_SIZE - 0x8, true)
-    const parametersInfoSize = header.getUint32(HEADER_SIZE - 0x4, true)
+    const parameterBufferSize = header.getUint32(headerSize - 0x8, true)
+    const parametersInfoSize = header.getUint32(headerSize - 0x4, true)
 
     console.debug(`Read parameters info ${parameterBufferSize}:${parametersInfoSize}`)
     // Read parameters info
@@ -50,7 +65,7 @@ export function parseWatchFaceBin(buffer) {
 
 
     // convert parameter ids to readable names
-    const parametersWithName = convertIdsToNames(parameters)
+    const parametersWithName = convertIdsToNames(parameters, fileStructureInfo)
     // Offset is now at images info
     offset += parametersSize
 
@@ -75,12 +90,12 @@ export function parseWatchFaceBin(buffer) {
  * 
  * @param {object} parameters parameters object with name as key
  * @param {object[]} images list of resource images to include
+ * @param {object} fileStructureInfo A file structure descriptor for this bin format
  * @returns {Uint8Array} The binary data of the resulting watchface file
  */
-export function writeWatchFaceBin(parametersWithNames, images) {
+export function writeWatchFaceBin(parametersWithNames, images, fileStructureInfo) {
     // Convert parameters names to ids
-    const parametersWithIds = convertNamesToIds(parametersWithNames)
-
+    const parametersWithIds = convertNamesToIds(parametersWithNames, fileStructureInfo)
 
     // Encode all the parameters
     const parametersInfo = { "1": { "1": 0, "2": images.length } }
@@ -122,26 +137,20 @@ export function writeWatchFaceBin(parametersWithNames, images) {
         imagesSize += binaryImage.length
     }
 
+    const headerSize = fileStructureInfo.header.length
+
     // Create buffer to hold file data
-    const result = new Uint8Array(HEADER_SIZE + binaryParametersInfo.length + binaryParameters.length + binaryImagesInfo.length + imagesSize)
+    const result = new Uint8Array(headerSize + binaryParametersInfo.length + binaryParameters.length + binaryImagesInfo.length + imagesSize)
     const resultView = new DataView(result.buffer)
 
     // write header
-    result.set([
-        0x55, 0x49, 0x48, 0x48,
-        0x01, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0x01, 0xb5, 0xe5, 0x3d, 0x00, 0x3d, 0x00, 0x30, 0x27,
-        0x00, 0x00, 0xab, 0x86, 0x09, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0xff, 0xff, 0xff,
-        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-    ], 0)
-
+    result.set(fileStructureInfo.header, 0)
 
     // Set parameters info size
-    resultView.setUint32(HEADER_SIZE - 0x8, maxParameterLength, true)
-    resultView.setUint32(HEADER_SIZE - 0x4, binaryParametersInfo.length, true)
+    resultView.setUint32(headerSize - 0x8, maxParameterLength, true)
+    resultView.setUint32(headerSize - 0x4, binaryParametersInfo.length, true)
 
-    let offset = HEADER_SIZE
+    let offset = headerSize
 
     // add parameters info
     result.set(binaryParametersInfo, offset)
