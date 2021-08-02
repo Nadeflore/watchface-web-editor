@@ -3,6 +3,7 @@
 	export let id;
 
 	import { createEventDispatcher } from "svelte";
+	import { images } from "./stores";
 
 	import ImageComponent from "./Image.svelte";
 	import OpenImageButton from "./OpenImageButton.svelte";
@@ -23,9 +24,13 @@
 
 	const handleImageLoad = (event) => {
 		const imageInfo = event.detail.images[0];
-		image.pixels = imageInfo.pixels;
-		image.width = imageInfo.width;
-		image.height = imageInfo.height;
+		images.update((imgs) => {
+			imgs[id].pixels = imageInfo.pixels;
+			imgs[id].width = imageInfo.width;
+			imgs[id].height = imageInfo.height;
+
+			return imgs;
+		});
 	};
 </script>
 
