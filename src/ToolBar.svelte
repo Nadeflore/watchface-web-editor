@@ -106,7 +106,9 @@
 <style>
     .toolbar {
         height: 50px;
-        padding: 10px;
+        padding: 2px;
         box-sizing: border-box;
+        overflow-x: auto;
+        white-space: nowrap;
     }
 </style>

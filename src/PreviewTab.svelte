@@ -57,9 +57,19 @@
         }
     }
 
-    // setInterval(() => {
-    //     status.animationTime += 50;
-    // }, 50);
+    let animationIntervalId = undefined;
+
+    function toogleAnimation() {
+        if (animationIntervalId) {
+            clearInterval(animationIntervalId);
+            animationIntervalId = undefined;
+            status.animationTime = 0;
+        } else {
+            animationIntervalId = setInterval(() => {
+                status.animationTime += 50;
+            }, 50);
+        }
+    }
 </script>
 
 <div class="preview-tab">
@@ -79,16 +89,17 @@
             {/each}
         </div>
     {/if}
+    <button on:click={toogleAnimation}
+        >{animationIntervalId ? "stop" : "play"} animation</button
+    >
 </div>
 
 <style>
     .preview-tab {
-        width: 200px;
         height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         overflow: auto;
+        padding: 5px;
+        flex-shrink: 0;
     }
 
     .display-area {

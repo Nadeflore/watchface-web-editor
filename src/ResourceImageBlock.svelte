@@ -50,9 +50,10 @@
 	</div>
 	<div class="info">
 		<div class="size">{image.width} x {image.height}</div>
-		<div class="bits-per-pixel">{image.bitsPerPixel}bit</div>
-		<div class="pixel-format">
-			{image.pixelFormat ? image.pixelFormat.toString(16) : ""}
+		<div class="bits-per-pixel">
+			{image.bitsPerPixel}bit {image.pixelFormat
+				? image.pixelFormat.toString(16)
+				: ""}
 		</div>
 	</div>
 </div>
