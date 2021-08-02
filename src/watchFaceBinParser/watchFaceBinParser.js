@@ -22,9 +22,12 @@ export function parseWatchFaceBin(buffer) {
         throw new Error(`Invalid signature`)
     }
 
+    // Size of the biggest paramater
+    // Parameters with a size bigger than this will be ignored by the watch
+    const parameterBufferSize = header.getUint32(HEADER_SIZE - 0x8, true)
     const parametersInfoSize = header.getUint32(HEADER_SIZE - 0x4, true)
 
-    console.debug("Read parameters info")
+    console.debug(`Read parameters info ${parameterBufferSize}:${parametersInfoSize}`)
     // Read parameters info
     const parametersInfo = parseParameters(new Uint8Array(buffer, offset, parametersInfoSize))
 
@@ -39,11 +42,12 @@ export function parseWatchFaceBin(buffer) {
     // Other parameter info contain location of each parameters
     const parameters = {}
     for (const [key, value] of Object.entries(parametersInfo)) {
-        console.debug(`Read parameter ${key}`)
         const parameterOffset = value["1"]
         const parameterSize = value["2"]
+        console.debug(`Read parameter ${key}, ${parameterOffset}:${parameterSize}`)
         parameters[key] = parseParameters(new Uint8Array(buffer, offset + parameterOffset, parameterSize))
     }
+
 
     // convert parameter ids to readable names
     const parametersWithName = convertIdsToNames(parameters)
@@ -81,6 +85,7 @@ export function writeWatchFaceBin(parametersWithNames, images) {
     // Encode all the parameters
     const parametersInfo = { "1": { "1": 0, "2": images.length } }
     const binaryParameters = []
+    let maxParameterLength = 0
 
     for (const [key, value] of Object.entries(parametersWithIds)) {
         // Encode parameter to binary
@@ -89,6 +94,10 @@ export function writeWatchFaceBin(parametersWithNames, images) {
         parametersInfo[key] = { "1": binaryParameters.length, "2": binaryParameter.length }
         // write actual parameter
         binaryParameters.push(...binaryParameter)
+
+        if (binaryParameter.length > maxParameterLength) {
+            maxParameterLength = binaryParameter.length
+        }
     }
 
     // write parameters size in param info
@@ -124,11 +133,12 @@ export function writeWatchFaceBin(parametersWithNames, images) {
         0x00, 0x00, 0xab, 0x86, 0x09, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0xff, 0xff, 0xff,
         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x88, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     ], 0)
 
 
     // Set parameters info size
+    resultView.setUint32(HEADER_SIZE - 0x8, maxParameterLength, true)
     resultView.setUint32(HEADER_SIZE - 0x4, binaryParametersInfo.length, true)
 
     let offset = HEADER_SIZE
