@@ -136,7 +136,8 @@ const PARAMETERS_DESCRIPTOR_FOR_TESTS = {
         "Image": {
             "1:X": "int",
             "2:Y": "int",
-            "3:ImageIndex": "imgid"
+            "3:ImageIndex": "imgid",
+            "4:Color": "color"
         }
     }
 }
@@ -156,6 +157,14 @@ describe('convertIdsToNames()', () => {
             PARAMETERS_DESCRIPTOR_FOR_TESTS
         )).toStrictEqual(
             { "Background": { "Image": [{ "X": 0, "Y": 0, "ImageIndex": 0 }, { "X": 0, "Y": 0, "ImageIndex": 1 }] } }
+        )
+    })
+    it('format values according to its type', () => {
+        expect(convertIdsToNames(
+            { "2": { "1": { "1": 0, "2": 0, "3": 0, "4": 0xFF00FF00 } } },
+            PARAMETERS_DESCRIPTOR_FOR_TESTS
+        )).toStrictEqual(
+            { "Background": { "Image": { "X": 0, "Y": 0, "ImageIndex": 0, "Color": "0xFF00FF00" } } }
         )
     })
 })

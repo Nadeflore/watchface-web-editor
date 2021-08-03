@@ -2,11 +2,13 @@ import { parseParameters, writeParameters, convertIdsToNames, convertNamesToIds 
 import { parseImage, writeImage } from './imageParser'
 
 import UIHH from './models/fileTypes/UIHH.json'
+import HMDIAL from './models/fileTypes/HMDIAL.json'
+import miband4 from './models/miband4.json'
 import miband5 from './models/miband5.json'
 import miband6 from './models/miband6.json'
 
-const fileTypes = { UIHH }
-const watchModelsDescriptor = [miband5, miband6]
+const fileTypes = { UIHH, HMDIAL }
+const watchModelsDescriptor = [miband5, miband6, miband4]
 
 export function getAvailableModels() {
     for (const model of watchModelsDescriptor) {

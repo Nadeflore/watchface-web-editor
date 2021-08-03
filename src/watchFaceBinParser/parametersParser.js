@@ -236,6 +236,10 @@ class ParametersNameConverter {
 
 		// Base case
 		if (typeof parametersList === "number") {
+			if (typeof parametersDescription === "object") {
+				console.warn("Expected object, but got literal")
+				return parametersList
+			}
 			return formatParameterValue(parametersList, parametersDescription)
 		}
 

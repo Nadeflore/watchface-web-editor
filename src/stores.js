@@ -13,6 +13,7 @@ export const parameters = derived(
             errorMessage.set(null)
             return newParameters
         } catch (e) {
+            console.error(e);
             errorMessage.set(e)
         }
         return get(parameters)

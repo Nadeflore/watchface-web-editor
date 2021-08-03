@@ -39,6 +39,7 @@
             parametersJson.set(JSON.stringify(parsedParameters, null, 2));
             images.set(parsedImages);
         } catch (e) {
+            console.error(e);
             errorMessage.set(e);
         }
     }
@@ -56,6 +57,7 @@
                 "watchface.bin"
             );
         } catch (e) {
+            console.error(e);
             errorMessage.set(e);
         }
     }

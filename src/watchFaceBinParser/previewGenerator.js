@@ -17,6 +17,11 @@ const DISPLAY_INFO = [
         statusName: "minutes"
     },
     {
+        path: "Time.Seconds",
+        type: "twoDigits",
+        statusName: "seconds"
+    },
+    {
         path: "Time.DelimiterImage",
         type: "always"
     },
@@ -89,6 +94,11 @@ const DISPLAY_INFO = [
         statusName: "weekday"
     },
     {
+        path: "Date.WeekDays",
+        type: "imageFromRange",
+        statusName: "weekday"
+    },
+    {
         path: "Weather.Icon.CustomIcon",
         type: "imageFromRange",
         statusName: "weather"
@@ -153,6 +163,16 @@ const DISPLAY_INFO = [
         path: "Status.Bluetooth",
         type: "onoff",
         statusName: "bluetooth"
+    },
+    {
+        path: "Status.Battery.Number",
+        type: "number",
+        statusName: "batteryPercent"
+    },
+    {
+        path: "Status.Battery.BatteryIcon",
+        type: "lineScale",
+        statusName: "batteryPercent"
     },
     {
         path: "Battery.BatteryText",
@@ -243,7 +263,7 @@ export function generatePreview(parameters, images, status) {
         // check path exists in parameter
         const parameter = getPath(parameters, info.path, lang)
 
-        if(!parameter) {
+        if (!parameter) {
             // not found in this watchface, skip
             continue
         }
@@ -254,7 +274,7 @@ export function generatePreview(parameters, images, status) {
         }
 
 
-        switch(info.type) {
+        switch (info.type) {
             case "always":
                 displaySingleImage(result, parameter)
                 break
@@ -266,7 +286,7 @@ export function generatePreview(parameters, images, status) {
                 displayImageFromRange(result, parameter.Tens, +chars[0])
                 displayImageFromRange(result, parameter.Ones, +chars[1])
                 break
-            
+
             case "number":
                 displayText(result, images, convertNumberToImageIds(Math.round(value), parameter, info.padZeros), parameter)
                 break
@@ -279,14 +299,14 @@ export function generatePreview(parameters, images, status) {
                 let textImageIds
                 if (value) {
                     textImageIds = convertNumberToImageIds(value, parameter.Number, info.padZeros, parameter.DecimalPointImageIndex, parameter.MinusImageIndex)
-                } else if(parameter.NoDataImageIndex) {
+                } else if (parameter.NoDataImageIndex) {
                     textImageIds = [parameter.NoDataImageIndex]
                 } else {
                     // No value, and no NoDataImageIndex, nothing to display here
                     break
                 }
 
-                if  (parameter.PrefixImageIndex) {
+                if (parameter.PrefixImageIndex) {
                     textImageIds.unshift(parameter.PrefixImageIndex)
                 }
                 if (parameter.SuffixImageIndex) {
@@ -324,45 +344,45 @@ export function generatePreview(parameters, images, status) {
                         return [...a, parameter.DelimiterImageIndex, ...b]
                     })
 
-                    if (parameter.SuffixImageIndex) {
-                        textImageIds.push(parameter.SuffixImageIndex)
-                    }
-                    displayText(result, images, textImageIds, parameter.Number)
+                if (parameter.SuffixImageIndex) {
+                    textImageIds.push(parameter.SuffixImageIndex)
+                }
+                displayText(result, images, textImageIds, parameter.Number)
                 break
             }
 
             case "ampm":
                 if (!status.locale.time24h) {
                     const ampm = value ? "PM" : "AM"
-                    const imageId =  parameter[`ImageIndex${ampm}${lang}`]
+                    const imageId = parameter[`ImageIndex${ampm}${lang}`]
                     const x = parameter[`X_${lang}`] || parameter.X
                     const y = parameter[`Y_${lang}`] || parameter.Y
                     displayImage(result, imageId, x, y)
                 }
                 break;
-            
+
             case "onoff":
-                if (parameter.OnImageIndex && value) {
+                if (parameter.OnImageIndex !== undefined && value) {
                     displayImage(result, parameter.OnImageIndex, parameter.Coordinates.X, parameter.Coordinates.Y)
                 }
-                if (parameter.OffImageIndex && !value) {
+                if (parameter.OffImageIndex !== undefined && !value) {
                     displayImage(result, parameter.OffImageIndex, parameter.Coordinates.X, parameter.Coordinates.Y)
                 }
-                if (parameter.OnImage && value) {
+                if (parameter.OnImage !== undefined && value) {
                     displaySingleImage(result, parameter.OnImage)
                 }
-                if (parameter.OffImage && !value) {
+                if (parameter.OffImage !== undefined && !value) {
                     displaySingleImage(result, parameter.OffImage)
                 }
                 break
 
             case "lineScale":
-                displayImageFromRange(result, parameter, Math.round(value/100 * (parameter.ImagesCount - 1)))
+                displayImageFromRange(result, parameter, Math.round(value / 100 * (parameter.ImagesCount - 1)))
                 break
 
             case "linear":
-                const progress = Math.round(value/100 * (parameter.Segments.length - 1))
-                for (let i=0; i<=progress; i++) {
+                const progress = Math.round(value / 100 * (parameter.Segments.length - 1))
+                for (let i = 0; i <= progress; i++) {
                     const pos = parameter.Segments[i]
                     displayImage(result, parameter.StartImageIndex + i, pos.X, pos.Y)
                 }
@@ -370,28 +390,28 @@ export function generatePreview(parameters, images, status) {
 
             case "weekday":
                 const weekDayString = {
-                    "1":"Monday",
-                    "2":"Tuesday",
-                    "3":"Wednesday",
-                    "4":"Thursday",
-                    "5":"Friday",
-                    "6":"Saturday",
-                    "7":"Sunday"
+                    "1": "Monday",
+                    "2": "Tuesday",
+                    "3": "Wednesday",
+                    "4": "Thursday",
+                    "5": "Friday",
+                    "6": "Saturday",
+                    "7": "Sunday"
                 }[value]
                 displaySingleImage(result, parameter[weekDayString])
                 break
 
             case "animation":
-                
-                for(const animation of Array.isArray(parameter)? parameter: [parameter]) {
+
+                for (const animation of Array.isArray(parameter) ? parameter : [parameter]) {
                     // Real watch can't display faster than about 80ms interval
                     const speed = Math.max(animation.Speed, 80)
-                    const currentFrame = Math.round(value/speed)
+                    const currentFrame = Math.round(value / speed)
                     const currentFrameLooped = currentFrame % animation.AnimationImages.ImagesCount
 
                     // display only if repeat count is not exceeded
-                    if (currentFrame < animation.RepeatCount * animation.AnimationImages.ImagesCount) 
-                    displayImageFromRange(result, animation.AnimationImages, currentFrameLooped)
+                    if (currentFrame < animation.RepeatCount * animation.AnimationImages.ImagesCount)
+                        displayImageFromRange(result, animation.AnimationImages, currentFrameLooped)
                 }
 
                 break
@@ -476,7 +496,7 @@ function displayText(result, images, elementImageIds, style) {
             imageId: elementImageId,
             position: {
                 x: x,
-                y: computePositionWithAligment(style.TopLeftY, style.BottomRightY, image.height, alignment >> 3) + i * style.SpacingY
+                y: computePositionWithAligment(style.TopLeftY, style.BottomRightY, image.height, alignment >> 3) + i * (style.SpacingY || 0)
             }
         })
 
@@ -500,11 +520,11 @@ function computePositionWithAligment(lowerBound, upperBound, elementSize, alignm
 
     } else if (alignment & 0x04) {
         // upper bound align
-        result =  upperBound - elementSize
+        result = upperBound - elementSize
 
     } else /*if (alignment & 0x08)*/ {
         // center align (default)
-        result = Math.round((lowerBound + upperBound)/2 - elementSize/2)
+        result = Math.round((lowerBound + upperBound) / 2 - elementSize / 2)
     }
 
     // don't allow to go lower than the lower bound

@@ -13,6 +13,7 @@
 				width: $watchModelDescriptor.screen.width,
 				height: $watchModelDescriptor.screen.height,
 			}).catch((e) => {
+				console.error(e);
 				throw new Error(`Invalid image: ${file.name}`);
 			})
 		);

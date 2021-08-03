@@ -13,6 +13,7 @@
     const status = {
         hours: 12,
         minutes: 6,
+        seconds: 34,
         steps: 12882,
         stepsPercent: 67,
         calories: 3453,
@@ -53,6 +54,7 @@
                 (e) => ({ image: $images[e.imageId], position: e.position })
             );
         } catch (e) {
+            console.error(e);
             errorMessage.set(e);
         }
     }

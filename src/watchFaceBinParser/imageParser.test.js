@@ -14,18 +14,18 @@ describe('parseImage()', () => {
                 0x00, 0x00, // No palette transparency
                 0x11, 0x21, 0x31, 0x41, // 1st pixel
                 0x12, 0x22, 0x32, 0x42, // 2nd pixel
-             ]).buffer)).toStrictEqual(
-            {
-                "pixels": new Uint8ClampedArray([
-                    0x11, 0x21, 0x31, 0xFF - 0x41, // 1st pixel
-                    0x12, 0x22, 0x32, 0xFF - 0x42, // 2nd pixel
-                ]),
-                "width": 2,
-                "height": 1,
-                "bitsPerPixel": 32,
-                "pixelFormat": 0x10
-            }
-        )
+            ]).buffer)).toStrictEqual(
+                {
+                    "pixels": new Uint8ClampedArray([
+                        0x11, 0x21, 0x31, 0xFF - 0x41, // 1st pixel
+                        0x12, 0x22, 0x32, 0xFF - 0x42, // 2nd pixel
+                    ]),
+                    "width": 2,
+                    "height": 1,
+                    "bitsPerPixel": 32,
+                    "pixelFormat": 0x10
+                }
+            )
     })
     it('parse 24 bit abgr image', () => {
         expect(parseImage(new Uint8Array(
@@ -40,18 +40,18 @@ describe('parseImage()', () => {
                 0x00, 0x00, // No palette transparency
                 0xBC, 0x4C, 0x31, // 1st pixel
                 0x88, 0x22, 0x32, // 2nd pixel
-             ]).buffer)).toStrictEqual(
-            {
-                "pixels": new Uint8ClampedArray([
-                    0x88, 0x84, 0x48, 0xFF - 0xBC, // 1st pixel
-                    0x90, 0x44, 0x20, 0xFF - 0x88, // 2nd pixel
-                ]),
-                "width": 2,
-                "height": 1,
-                "bitsPerPixel": 24,
-                "pixelFormat": 0x1B
-            }
-        )
+            ]).buffer)).toStrictEqual(
+                {
+                    "pixels": new Uint8ClampedArray([
+                        0x88, 0x84, 0x48, 0xFF - 0xBC, // 1st pixel
+                        0x90, 0x44, 0x20, 0xFF - 0x88, // 2nd pixel
+                    ]),
+                    "width": 2,
+                    "height": 1,
+                    "bitsPerPixel": 24,
+                    "pixelFormat": 0x1B
+                }
+            )
     })
     it('parse 24 bit argb image', () => {
         expect(parseImage(new Uint8Array(
@@ -66,18 +66,18 @@ describe('parseImage()', () => {
                 0x00, 0x00, // No palette transparency
                 0xBC, 0x4C, 0x31, // 1st pixel
                 0x88, 0x22, 0x32, // 2nd pixel
-             ]).buffer)).toStrictEqual(
-            {
-                "pixels": new Uint8ClampedArray([
-                    0x48, 0x84, 0x88, 0xFF - 0xBC, // 1st pixel
-                    0x20, 0x44, 0x90, 0xFF - 0x88, // 2nd pixel
-                ]),
-                "width": 2,
-                "height": 1,
-                "bitsPerPixel": 24,
-                "pixelFormat": 0x1C
-            }
-        )
+            ]).buffer)).toStrictEqual(
+                {
+                    "pixels": new Uint8ClampedArray([
+                        0x48, 0x84, 0x88, 0xFF - 0xBC, // 1st pixel
+                        0x20, 0x44, 0x90, 0xFF - 0x88, // 2nd pixel
+                    ]),
+                    "width": 2,
+                    "height": 1,
+                    "bitsPerPixel": 24,
+                    "pixelFormat": 0x1C
+                }
+            )
     })
     it('parse 16 bit bgr image', () => {
         expect(parseImage(new Uint8Array(
@@ -92,18 +92,18 @@ describe('parseImage()', () => {
                 0x00, 0x00, // No palette transparency
                 0x31, 0x4C, // 1st pixel
                 0x32, 0x22, // 2nd pixel
-             ]).buffer)).toStrictEqual(
-            {
-                "pixels": new Uint8ClampedArray([
-                    0x88, 0x84, 0x48, 0xFF, // 1st pixel
-                    0x90, 0x44, 0x20, 0xFF, // 2nd pixel
-                ]),
-                "width": 2,
-                "height": 1,
-                "bitsPerPixel": 16,
-                "pixelFormat": 0x08 
-            }
-        )
+            ]).buffer)).toStrictEqual(
+                {
+                    "pixels": new Uint8ClampedArray([
+                        0x88, 0x84, 0x48, 0xFF, // 1st pixel
+                        0x90, 0x44, 0x20, 0xFF, // 2nd pixel
+                    ]),
+                    "width": 2,
+                    "height": 1,
+                    "bitsPerPixel": 16,
+                    "pixelFormat": 0x08
+                }
+            )
     })
     it('parse 16 bit rgb image', () => {
         expect(parseImage(new Uint8Array(
@@ -118,18 +118,18 @@ describe('parseImage()', () => {
                 0x00, 0x00, // No palette transparency
                 0x31, 0x4C, // 1st pixel
                 0x32, 0x22, // 2nd pixel
-             ]).buffer)).toStrictEqual(
-            {
-                "pixels": new Uint8ClampedArray([
-                    0x48, 0x84, 0x88, 0xFF, // 1st pixel
-                    0x20, 0x44, 0x90, 0xFF, // 2nd pixel
-                ]),
-                "width": 2,
-                "height": 1,
-                "bitsPerPixel": 16,
-                "pixelFormat": 0x09
-            }
-        )
+            ]).buffer)).toStrictEqual(
+                {
+                    "pixels": new Uint8ClampedArray([
+                        0x48, 0x84, 0x88, 0xFF, // 1st pixel
+                        0x20, 0x44, 0x90, 0xFF, // 2nd pixel
+                    ]),
+                    "width": 2,
+                    "height": 1,
+                    "bitsPerPixel": 16,
+                    "pixelFormat": 0x09
+                }
+            )
     })
     it('parse 16 bit abgr image', () => {
         expect(parseImage(new Uint8Array(
@@ -144,18 +144,18 @@ describe('parseImage()', () => {
                 0x00, 0x00, // No palette transparency
                 0x31, 0x4C, // 1st pixel
                 0x32, 0x22, // 2nd pixel
-             ]).buffer)).toStrictEqual(
-            {
-                "pixels": new Uint8ClampedArray([
-                    16, 48, 192, 191, // 1st pixel
-                    32, 48, 32, 223, // 2nd pixel
-                ]),
-                "width": 2,
-                "height": 1,
-                "bitsPerPixel": 16,
-                "pixelFormat": 0x13
-            }
-        )
+            ]).buffer)).toStrictEqual(
+                {
+                    "pixels": new Uint8ClampedArray([
+                        16, 48, 192, 191, // 1st pixel
+                        32, 48, 32, 223, // 2nd pixel
+                    ]),
+                    "width": 2,
+                    "height": 1,
+                    "bitsPerPixel": 16,
+                    "pixelFormat": 0x13
+                }
+            )
     })
     it('parse 8 bit image with palette', () => {
         expect(parseImage(new Uint8Array(
@@ -173,17 +173,17 @@ describe('parseImage()', () => {
                 0x01, // 1st pixel
                 0x00, // 2nd pixel
             ]).buffer)).toStrictEqual(
-            {
-                "pixels": new Uint8ClampedArray([
-                    0x12, 0x22, 0x32, 0xFF, // 1st pixel
-                    0x11, 0x21, 0x31, 0xFF, // 2nd pixel
-                ]),
-                "width": 2,
-                "height": 1,
-                "bitsPerPixel": 8,
-                "pixelFormat": 0x64
-            }
-        )
+                {
+                    "pixels": new Uint8ClampedArray([
+                        0x12, 0x22, 0x32, 0xFF, // 1st pixel
+                        0x11, 0x21, 0x31, 0xFF, // 2nd pixel
+                    ]),
+                    "width": 2,
+                    "height": 1,
+                    "bitsPerPixel": 8,
+                    "pixelFormat": 0x64
+                }
+            )
     })
     it('parse 8 bit image with palette and transparency', () => {
         expect(parseImage(new Uint8Array(
@@ -201,17 +201,17 @@ describe('parseImage()', () => {
                 0x01, // 1st pixel
                 0x00, // 2nd pixel
             ]).buffer)).toStrictEqual(
-            {
-                "pixels": new Uint8ClampedArray([
-                    0x12, 0x22, 0x32, 0xFF, // 1st pixel
-                    0x11, 0x21, 0x31, 0x00, // 2nd pixel
-                ]),
-                "width": 2,
-                "height": 1,
-                "bitsPerPixel": 8,
-                "pixelFormat": 0x64
-            }
-        )
+                {
+                    "pixels": new Uint8ClampedArray([
+                        0x12, 0x22, 0x32, 0xFF, // 1st pixel
+                        0x11, 0x21, 0x31, 0x00, // 2nd pixel
+                    ]),
+                    "width": 2,
+                    "height": 1,
+                    "bitsPerPixel": 8,
+                    "pixelFormat": 0x64
+                }
+            )
     })
     it('parse 4 bit image with palette', () => {
         expect(parseImage(new Uint8Array(
@@ -228,17 +228,44 @@ describe('parseImage()', () => {
                 0x12, 0x22, 0x32, 0x00, // 2nd palette color
                 0x10, // 1st & 2nd pixels
             ]).buffer)).toStrictEqual(
-            {
-                "pixels": new Uint8ClampedArray([
-                    0x12, 0x22, 0x32, 0xFF, // 1st pixel
-                    0x11, 0x21, 0x31, 0xFF, // 2nd pixel
-                ]),
-                "width": 2,
-                "height": 1,
-                "bitsPerPixel": 4,
-                "pixelFormat": 0x64
-            }
-        )
+                {
+                    "pixels": new Uint8ClampedArray([
+                        0x12, 0x22, 0x32, 0xFF, // 1st pixel
+                        0x11, 0x21, 0x31, 0xFF, // 2nd pixel
+                    ]),
+                    "width": 2,
+                    "height": 1,
+                    "bitsPerPixel": 4,
+                    "pixelFormat": 0x64
+                }
+            )
+    })
+    it('parse 2 bit image with palette', () => {
+        expect(parseImage(new Uint8Array(
+            [
+                0x42, 0x4D, // signature (BM)
+                0x64, 0x00, // paletted pixel data
+                0x02, 0x00, // width 2px
+                0x01, 0x00, // height 1px
+                0x01, 0x00, // row width 1 bytes
+                0x02, 0x00, // 2 bits per pixel
+                0x02, 0x00, // 2 colors palette
+                0x00, 0x00, // No palette transparency
+                0x11, 0x21, 0x31, 0x00, // 1st palette color
+                0x12, 0x22, 0x32, 0x00, // 2nd palette color
+                0x40, // 1st & 2nd pixels
+            ]).buffer)).toStrictEqual(
+                {
+                    "pixels": new Uint8ClampedArray([
+                        0x12, 0x22, 0x32, 0xFF, // 1st pixel
+                        0x11, 0x21, 0x31, 0xFF, // 2nd pixel
+                    ]),
+                    "width": 2,
+                    "height": 1,
+                    "bitsPerPixel": 2,
+                    "pixelFormat": 0x64
+                }
+            )
     })
 })
 
@@ -259,6 +286,6 @@ describe('writeImage()', () => {
                 0x00, 0x00, // No palette transparency
                 0xBC, 0x4C, 0x31, // 1st pixel
                 0x88, 0x22, 0x32, // 2nd pixel
-             ]))
+            ]))
     })
 })

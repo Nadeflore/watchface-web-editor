@@ -1,0 +1,9 @@
+{
+    "name": "Xiaomi Mi Band 4",
+    "screen": {
+        "width": 120,
+        "height": 240,
+        "roundedBorder": 6
+    },
+    "fileType": "HMDIAL"
+}
