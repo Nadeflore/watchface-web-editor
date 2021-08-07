@@ -72,6 +72,16 @@
             }, 50);
         }
     }
+
+    let displayArea;
+    let x = 0;
+    let y = 0;
+
+    function handleMouseover(e) {
+        const rect = displayArea.getBoundingClientRect();
+        x = e.clientX - rect.left;
+        y = e.clientY - rect.top;
+    }
 </script>
 
 <div class="preview-tab">
@@ -82,6 +92,8 @@
                 .width}px; height: {$watchModelDescriptor.screen
                 .height}px; border-radius: {$watchModelDescriptor.screen
                 .roundedBorder}px"
+            on:mousemove={handleMouseover}
+            bind:this={displayArea}
         >
             {#each imagesToDisplay as imageToDisplay}
                 <Image
@@ -91,6 +103,7 @@
             {/each}
         </div>
     {/if}
+    <div>{x},{y}</div>
     <button on:click={toogleAnimation}
         >{animationIntervalId ? "stop" : "play"} animation</button
     >
