@@ -296,6 +296,12 @@ export function generatePreview(parameters, images, status) {
                 break
 
             case "numberWithExtra":
+                if (parameter.SpacingX !== undefined) {
+                    // Actually just a number
+                    displayText(result, images, convertNumberToImageIds(Math.round(value), parameter, info.padZeros), parameter)
+                    break
+                }
+
                 let textImageIds
                 if (value) {
                     textImageIds = convertNumberToImageIds(value, parameter.Number, info.padZeros, parameter.DecimalPointImageIndex, parameter.MinusImageIndex)

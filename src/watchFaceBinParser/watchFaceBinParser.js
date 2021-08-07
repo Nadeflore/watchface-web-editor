@@ -2,18 +2,20 @@ import { parseParameters, writeParameters, convertIdsToNames, convertNamesToIds 
 import { parseImage, writeImage } from './imageParser'
 
 import UIHH from './models/fileTypes/UIHH.json'
-import HMDIAL from './models/fileTypes/HMDIAL.json'
 import miband4 from './models/miband4.json'
 import miband5 from './models/miband5.json'
 import miband6 from './models/miband6.json'
+import amazfitbip from './models/amazfitbip.json'
+import amazfitbips from './models/amazfitbips.json'
 
-const fileTypes = { UIHH, HMDIAL }
-const watchModelsDescriptor = [miband5, miband6, miband4]
+const fileTypes = { UIHH }
+const watchModelsDescriptor = [miband5, miband6, miband4, amazfitbip, amazfitbips]
 
 export function getAvailableModels() {
     for (const model of watchModelsDescriptor) {
-        // Replace file type name with actual fileType data
-        model.fileType = fileTypes[model.fileType]
+        if (typeof model.fileType === "string")
+            // Replace file type name with actual fileType data
+            model.fileType = fileTypes[model.fileType]
     }
     return watchModelsDescriptor
 }

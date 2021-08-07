@@ -267,6 +267,33 @@ describe('parseImage()', () => {
                 }
             )
     })
+    it('parse 1 bit image with palette', () => {
+        expect(parseImage(new Uint8Array(
+            [
+                0x42, 0x4D, // signature (BM)
+                0x64, 0x00, // paletted pixel data
+                0x02, 0x00, // width 2px
+                0x01, 0x00, // height 1px
+                0x01, 0x00, // row width 1 bytes
+                0x01, 0x00, // 1 bits per pixel
+                0x02, 0x00, // 2 colors palette
+                0x00, 0x00, // No palette transparency
+                0x11, 0x21, 0x31, 0x00, // 1st palette color
+                0x12, 0x22, 0x32, 0x00, // 2nd palette color
+                0x80, // 1st & 2nd pixels
+            ]).buffer)).toStrictEqual(
+                {
+                    "pixels": new Uint8ClampedArray([
+                        0x12, 0x22, 0x32, 0xFF, // 1st pixel
+                        0x11, 0x21, 0x31, 0xFF, // 2nd pixel
+                    ]),
+                    "width": 2,
+                    "height": 1,
+                    "bitsPerPixel": 1,
+                    "pixelFormat": 0x64
+                }
+            )
+    })
 })
 
 describe('writeImage()', () => {

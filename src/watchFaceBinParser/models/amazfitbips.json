@@ -1,8 +1,8 @@
 {
-    "name": "Xiaomi Mi Band 4",
+    "name": "Amazfit Bip S",
     "screen": {
-        "width": 120,
-        "height": 240,
+        "width": 176,
+        "height": 176,
         "roundedBorder": 6
     },
     "fileType": {
@@ -51,7 +51,9 @@
         ],
         "parameters": {
             "2:Background": {
-                "1:Image": "Image"
+                "1:Image": "Image",
+                "3:Preview": "Image",
+                "4:FrontImage": "Image"
             },
             "3:Time": {
                 "1:Hours": {
@@ -65,12 +67,22 @@
                 "3:Seconds": {
                     "1:Tens": "ImageRange",
                     "2:Ones": "ImageRange"
-                }
+                },
+                "4:DayAmPm": {
+                    "1:X": "int",
+                    "2:Y": "int",
+                    "3:ImageIndexAMCN": "imgid",
+                    "4:ImageIndexPMCN": "imgid",
+                    "5:ImageIndexAMEN": "imgid",
+                    "6:ImageIndexPMEN": "imgid"
+                },
+                "5:DrawingOrder": "bool"
             },
             "4:Activity": {
                 "1:Steps": {
                     "1:Number": "Number",
-                    "2:SuffixImageIndex": "imgid"
+                    "2:PrefixImageIndex": "imgid",
+                    "3:SuffixImageIndex": "imgid"
                 },
                 "3:Calories": {
                     "1:Number": "Number",
@@ -78,8 +90,9 @@
                 },
                 "4:Pulse": {
                     "1:Number": "Number",
-                    "2:NoDataImageIndex": "imgid",
-                    "3:SuffixImageIndex": "imgid"
+                    "2:PrefixImageIndex": "imgid",
+                    "3:NoDataImageIndex": "imgid",
+                    "4:SuffixImageIndex": "imgid"
                 },
                 "5:Distance": {
                     "1:Number": "Number",
@@ -101,20 +114,11 @@
                     "3:TwoDigitsMonth": "bool",
                     "4:TwoDigitsDay": "bool"
                 },
-                "3:DayAmPm": {
-                    "1:X": "int",
-                    "2:Y": "int",
-                    "3:ImageIndexAMCN": "imgid",
-                    "4:ImageIndexPMCN": "imgid",
-                    "5:ImageIndexAMEN": "imgid",
-                    "6:ImageIndexPMEN": "imgid",
-                    "7:X_EN": "int",
-                    "8:Y_EN": "int"
-                },
                 "2:WeekDays": "ImageRange"
             },
             "6:Weather": {
                 "1:Icon": {
+                    "1:Position": "Coordinates",
                     "2:CustomIcon": "ImageRange",
                     "3:Position1": "Coordinates",
                     "4:Position2": "Coordinates"
@@ -124,7 +128,9 @@
                     "2:Today": {
                         "1:Separate": {
                             "1:Day": "Temperature",
-                            "2:Night": "Temperature"
+                            "2:Night": "Temperature",
+                            "3:DayAlt": "Coordinates",
+                            "4:NightAlt": "Coordinates"
                         },
                         "2:OneLine": {
                             "1:Number": "Number",
@@ -137,6 +143,7 @@
                 }
             },
             "7:StepsProgress": {
+                "1:GoalImage": "Image",
                 "2:Linear": {
                     "1:StartImageIndex": "imgid",
                     "2:Segments": "Coordinates"
@@ -153,33 +160,23 @@
                 }
             },
             "8:Status": {
-                "1:DoNotDisturb": "StatusImage",
-                "2:Lock": "StatusImage",
-                "3:Bluetooth": "StatusImage",
-                "4:Battery": {
-                    "1:Unknown1": {},
-                    "2:Number": "Number",
-                    "3:BatteryIcon": "ImageRange"
+                "1:Bluetooth": "StatusImage",
+                "2:Alarm": "StatusImage",
+                "3:Lock": "StatusImage",
+                "4:DoNotDisturb": "StatusImage"
+            },
+            "9:Battery": {
+                "1:BatteryText": "Number",
+                "2:BatteryIcon": "ImageRange",
+                "3:Linear": {
+                    "1:StartImageIndex": "imgid",
+                    "2:Segments": "Coordinates"
                 }
             },
             "10:AnalogDialFace": {
                 "1:Hours": "VectorShape",
                 "2:Minutes": "VectorShape",
                 "3:Seconds": "VectorShape"
-            },
-            "11:Other": {
-                "1:Animation": {
-                    "1:AnimationImages": "ImageRange",
-                    "2:Speed": "int",
-                    "3:RepeatCount": "int",
-                    "4:UnknownV4": "int"
-                }
-            },
-            "12:HeartProgress": {
-                "1:Linear": {
-                    "1:StartImageIndex": "imgid",
-                    "2:Segments": "Coordinates"
-                }
             }
         },
         "types": {

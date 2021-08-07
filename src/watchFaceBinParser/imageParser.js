@@ -25,7 +25,7 @@ export function parseImage(dataBuffer) {
 	const paletteColorsCount = dataView.getUint16(12, true)
 	const transparentPaletteColor = dataView.getUint16(14, true)
 
-	if (!([16, 24, 32].includes(bitsPerPixel) && paletteColorsCount === 0 && [0x08, 0x13, 0x1B, 0x1C, 0x10, 0x09].includes(pixelFormat)) && !([2, 4, 8].includes(bitsPerPixel) && paletteColorsCount > 0 && pixelFormat === 0x64)) {
+	if (!([16, 24, 32].includes(bitsPerPixel) && paletteColorsCount === 0 && [0x08, 0x13, 0x1B, 0x1C, 0x10, 0x09].includes(pixelFormat)) && !([1, 2, 4, 8].includes(bitsPerPixel) && paletteColorsCount > 0 && pixelFormat === 0x64)) {
 		throw new Error(`Unsuported pixel format/color depth/Palette (should add support) ${pixelFormat.toString(16)} ${bitsPerPixel}  ${paletteColorsCount}`)
 	}
 
