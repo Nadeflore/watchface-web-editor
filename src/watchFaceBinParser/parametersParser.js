@@ -244,8 +244,8 @@ class ParametersNameConverter {
 		}
 
 		if (typeof parametersDescription !== "object") {
-			console.log(parametersDescription)
-			throw new Error("Parameter description does not match parameter")
+			console.warn("Expected literal, but got object")
+			return parametersList
 		}
 
 		let result = []
@@ -383,7 +383,8 @@ export function formatParameterValue(value, type) {
 			return !!value
 
 		case "alignment":
-			return alignmentValues.find(e => e.value === value).name
+			const alignment = alignmentValues.find(e => e.value === value)
+			return alignment ? alignment.name : value
 
 		case "color":
 			return "0x" + value.toString(16).toUpperCase()

@@ -25,6 +25,12 @@ export function parseImage(dataBuffer) {
 	const paletteColorsCount = dataView.getUint16(12, true)
 	const transparentPaletteColor = dataView.getUint16(14, true)
 
+	if (pixelFormat === 0x65) {
+		return parseCompressedImage(dataBuffer)
+	}
+
+
+
 	if (!([16, 24, 32].includes(bitsPerPixel) && paletteColorsCount === 0 && [0x08, 0x13, 0x1B, 0x1C, 0x10, 0x09].includes(pixelFormat)) && !([1, 2, 4, 8].includes(bitsPerPixel) && paletteColorsCount > 0 && pixelFormat === 0x64)) {
 		throw new Error(`Unsuported pixel format/color depth/Palette (should add support) ${pixelFormat.toString(16)} ${bitsPerPixel}  ${paletteColorsCount}`)
 	}
@@ -121,6 +127,79 @@ export function parseImage(dataBuffer) {
 			// Alpha is inverted, 0xFF is transparent
 			pixels[pixelPositionInResultArray + 3] = 0xFF - alpha
 		}
+	}
+
+	return { pixels, width, height, bitsPerPixel, pixelFormat }
+}
+
+/**
+ * 
+ * @param {ArrayBuffer} dataBuffer Binary data of a compressed bitmap image
+ * @returns {{width: number, height: number, pixels: Uint8ClampedArray, bitsPerPixel: number}} Object containing width height and pixel data in rgba form
+ */
+export function parseCompressedImage(dataBuffer) {
+	const dataView = new DataView(dataBuffer)
+	// Check signature
+	if (!(dataView.getUint8(0) === 0x42 && dataView.getUint8(1) === 0x4D)) {
+		throw new Error("Invalid image signature")
+	}
+
+	// read header
+	const pixelFormat = dataView.getUint16(2, true)
+	const width = dataView.getUint16(4, true)
+	const height = dataView.getUint16(6, true)
+	const rowSize = dataView.getUint16(8, true)
+	const bitsPerPixel = dataView.getUint16(10, true)
+	const dataSize = dataView.getUint32(12, true)
+
+	if (!([16].includes(bitsPerPixel) && ![0x64].includes(pixelFormat))) {
+		throw new Error(`Unsuported pixel format/color depth/Palette (should add support) ${pixelFormat.toString(16)} ${bitsPerPixel}`)
+	}
+
+	if (Math.ceil((bitsPerPixel * width) / 8) !== rowSize) {
+		throw new Error(`Row size is not as expected (Padding ?)`)
+	}
+
+	let offset = HEADER_SIZE
+
+	// Read pixel data
+	const pixels = new Uint8ClampedArray(4 * width * height);
+
+	while (offset < HEADER_SIZE + dataSize) {
+		// read block
+		const y = dataView.getUint16(offset, true)
+		let x = dataView.getUint16(offset + 2, true)
+		const blockSizeInPixels = dataView.getUint16(offset + 4, true)
+		offset += 6
+
+		for (let i = 0; i < blockSizeInPixels; i++) {
+			// read pixel color info
+			let red;
+			let green;
+			let blue;
+			let alpha = 0x00;
+
+			// for the 16 bit images, the value is little endian
+			let rgba = dataView.getUint16(offset, true)
+			// color is 16bit (5:6:5) rgb
+			red = (rgba & 0xF800) >> 8
+			green = (rgba & 0x07E0) >> 3
+			blue = (rgba & 0x001F) << 3
+
+
+
+
+			const pixelPositionInResultArray = (y * width + x) * 4
+			pixels[pixelPositionInResultArray] = red
+			pixels[pixelPositionInResultArray + 1] = green
+			pixels[pixelPositionInResultArray + 2] = blue
+			// Alpha is inverted, 0xFF is transparent
+			pixels[pixelPositionInResultArray + 3] = 0xFF - alpha
+
+			offset += 2
+			x++
+		}
+
 	}
 
 	return { pixels, width, height, bitsPerPixel, pixelFormat }

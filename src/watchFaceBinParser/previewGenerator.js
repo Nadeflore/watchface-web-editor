@@ -30,6 +30,24 @@ const DISPLAY_INFO = [
         type: "always"
     },
     {
+        path: "TimeNew.Hours",
+        type: "number",
+        statusName: "hours",
+        padZeros: 2
+    },
+    {
+        path: "TimeNew.Minutes.Minutes",
+        type: "number",
+        statusName: "minutes",
+        padZeros: 2
+    },
+    {
+        path: "TimeNew.Minutes.Seconds",
+        type: "number",
+        statusName: "seconds",
+        padZeros: 2
+    },
+    {
         path: "Activity.Steps",
         type: "numberWithExtra",
         statusName: "steps"
@@ -67,6 +85,18 @@ const DISPLAY_INFO = [
     },
     {
         path: "Date.MonthAndDayAndYear.Separate.Day",
+        type: "number",
+        statusName: "day",
+        padZeros: 2
+    },
+    {
+        path: "Date.MonthAndDayAndYear.SeparateNew.Month",
+        type: "number",
+        statusName: "month",
+        padZeros: 2
+    },
+    {
+        path: "Date.MonthAndDayAndYear.SeparateNew.Day",
         type: "number",
         statusName: "day",
         padZeros: 2
@@ -361,8 +391,16 @@ export function generatePreview(parameters, images, status) {
                 if (!status.locale.time24h) {
                     const ampm = value ? "PM" : "AM"
                     const imageId = parameter[`ImageIndex${ampm}${lang}`]
-                    const x = parameter[`X_${lang}`] || parameter.X
-                    const y = parameter[`Y_${lang}`] || parameter.Y
+                    let x = parameter[`X_${lang}`] || parameter.X
+                    let y = parameter[`Y_${lang}`] || parameter.Y
+                    if (parameter.AMPosition && !value) {
+                        x = parameter.AMPosition.X
+                        y = parameter.AMPosition.Y
+                    }
+                    if (parameter.PMPosition && value) {
+                        x = parameter.PMPosition.X
+                        y = parameter.PMPosition.Y
+                    }
                     displayImage(result, imageId, x, y)
                 }
                 break;

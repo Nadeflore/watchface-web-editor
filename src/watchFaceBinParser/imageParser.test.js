@@ -1,4 +1,4 @@
-import { parseImage, writeImage } from './imageParser'
+import { parseImage, parseCompressedImage, writeImage } from './imageParser'
 
 describe('parseImage()', () => {
     it('parse 32 bit image', () => {
@@ -291,6 +291,41 @@ describe('parseImage()', () => {
                     "height": 1,
                     "bitsPerPixel": 1,
                     "pixelFormat": 0x64
+                }
+            )
+    })
+    it('parse compressed image', () => {
+        expect(parseImage(new Uint8Array(
+            [
+                0x42, 0x4d, // signature (BM)
+                0x65, 0x00, // compressed image
+                0x02, 0x00, // width 2px
+                0x02, 0x00, // height 2px
+                0x04, 0x00, // row width 4 bytes
+                0x10, 0x00, // 16 bits per pixels ?
+                0x14, 0x00, 0x00, 0x00,// 14 byte long pixel data
+                0x00, 0x00, // coordinate y=0
+                0x00, 0x00, // coordinate x=0
+                0x02, 0x00, // 2 pixels long
+                0xff, 0xff, // first pixel
+                0xff, 0xff, // second pixel
+                0x01, 0x00, // coordinate y=1
+                0x00, 0x00, // coordinate x=0
+                0x02, 0x00, // 2 pixels long
+                0xff, 0xff, // first pixel (3rd pixel of image)
+                0x9a, 0xd6  // second pixel (4th pixel of image)
+            ]).buffer)).toStrictEqual(
+                {
+                    "pixels": new Uint8ClampedArray([
+                        0xF8, 0xFC, 0xF8, 0xFF, // 1st pixel
+                        0xF8, 0xFC, 0xF8, 0xFF, // 2nd pixel
+                        0xF8, 0xFC, 0xF8, 0xFF, // 3rd pixel
+                        0xD0, 0xD0, 0xD0, 0xFF, // 4th pixel
+                    ]),
+                    "width": 2,
+                    "height": 2,
+                    "bitsPerPixel": 16,
+                    "pixelFormat": 0x65
                 }
             )
     })

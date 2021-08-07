@@ -7,9 +7,10 @@ import miband5 from './models/miband5.json'
 import miband6 from './models/miband6.json'
 import amazfitbip from './models/amazfitbip.json'
 import amazfitbips from './models/amazfitbips.json'
+import amazfitbipu from './models/amazfitbipu.json'
 
 const fileTypes = { UIHH }
-const watchModelsDescriptor = [miband5, miband6, miband4, amazfitbip, amazfitbips]
+const watchModelsDescriptor = [miband5, miband6, miband4, amazfitbip, amazfitbips, amazfitbipu]
 
 export function getAvailableModels() {
     for (const model of watchModelsDescriptor) {
