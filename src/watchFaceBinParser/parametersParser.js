@@ -8,16 +8,17 @@ import { validate_each_argument } from 'svelte/internal';
  * Read binary parameters structure
  * 
  * @param {Uint8Array} byteArray An Uint8Array containing parameters
+ * @param {number} valueBitSize Precision of binary encoded values
  * @returns {object} An object containing the data
  */
-export function parseParameters(byteArray) {
+export function parseParameters(byteArray, valueBitSize) {
 	let result = {}
 	let offset = 0
 
 	// Read each key value pair, until the end of array
 	do {
 		// First value is a descriptor containing key and `hasChildren` flag
-		const [fieldDescriptor, keySize] = readVariableWidthValue(byteArray.subarray(offset))
+		const [fieldDescriptor, keySize] = readVariableWidthValue(byteArray.subarray(offset), valueBitSize)
 		const key = fieldDescriptor >> 3
 		const hasChildren = fieldDescriptor & 0x02
 
@@ -28,7 +29,7 @@ export function parseParameters(byteArray) {
 		offset += keySize
 
 		// From the second byte on is the value
-		let [fieldValue, valueSize] = readVariableWidthValue(byteArray.subarray(offset))
+		let [fieldValue, valueSize] = readVariableWidthValue(byteArray.subarray(offset), valueBitSize)
 
 		offset += valueSize
 
@@ -39,7 +40,7 @@ export function parseParameters(byteArray) {
 				throw new Error("Children size of 0 or less")
 			}
 			// Recursive call to read children data
-			fieldValue = parseParameters(byteArray.subarray(offset, offset + childrenSize))
+			fieldValue = parseParameters(byteArray.subarray(offset, offset + childrenSize), valueBitSize)
 			offset += childrenSize
 		}
 
@@ -60,9 +61,10 @@ export function parseParameters(byteArray) {
 /**
  * 
  * @param {object} parameters An object with integers as keys and values
+ * @param {number} valueBitSize Precision of binary encoded values
  * @returns {Uint8Array} Binary representation
  */
-export function writeParameters(parameters) {
+export function writeParameters(parameters, valueBitSize) {
 	const result = []
 	for (let [key, valueOrList] of Object.entries(parameters)) {
 		// In case the value is a list, write multiple values with same key
@@ -70,16 +72,16 @@ export function writeParameters(parameters) {
 			// base case
 			if (typeof value === "number") {
 				// write key
-				result.push(...writeVariableWidthValue(key << 3))
+				result.push(...writeVariableWidthValue(key << 3, valueBitSize))
 				// write value
-				result.push(...writeVariableWidthValue(value))
+				result.push(...writeVariableWidthValue(value, valueBitSize))
 			} else if (Array.isArray(value) || typeof value === "object") {
 				// recursive call for children
-				const children = writeParameters(value)
+				const children = writeParameters(value, valueBitSize)
 				// write key
-				result.push(...writeVariableWidthValue((key << 3) | 0x02))
+				result.push(...writeVariableWidthValue((key << 3) | 0x02, valueBitSize))
 				// write children size
-				result.push(...writeVariableWidthValue(children.length))
+				result.push(...writeVariableWidthValue(children.length, valueBitSize))
 				// write children
 				result.push(...children)
 			} else {
@@ -102,11 +104,12 @@ export function writeParameters(parameters) {
  * Because javascript number type is a 64 bit float, values bigger than 9e15 may not be represented accurately
  * BigInt could be returned, but a value that big is likely never needed
  * @param {Uint8Array} byteArray An Uint8Array containing variable width value
+ * @param {number} valueSize Value size in bits, default to 64bits
  * @returns {[number, number]} An Array with :
  *          - the value
  *          - number of bytes read from array (used to encode this value)
  */
-export function readVariableWidthValue(byteArray) {
+export function readVariableWidthValue(byteArray, valueSize = 64) {
 	let value = BigInt(0)
 	for (var i = 0; i < 10; i++) { // Up to a maximum of 10 bytes (Number of byte needed to represent 64 bit values (10 * 7 > 64)
 		const byte = byteArray[i]
@@ -117,26 +120,27 @@ export function readVariableWidthValue(byteArray) {
 			break // this is the last chunk of data
 		}
 	}
-	return [Number(BigInt.asIntN(64, value)), i + 1]
+	return [Number(BigInt.asIntN(valueSize, value)), i + 1]
 }
 
 /**
  * 
  * @param {number} value The value to encode
+ * @param {number} valueSize Value size in bits, default to 64bits
  * @returns {Uint8Array} An array containing the encoded value
  */
-export function writeVariableWidthValue(value) {
+export function writeVariableWidthValue(value, valueSize = 64) {
 	const result = []
-	let value64bit = BigInt.asUintN(64, BigInt(value))
+	let valueBigInt = BigInt.asUintN(valueSize, BigInt(value))
 
 	for (var i = 0; i < 10; i++) { // Up to a maximum of 10 bytes (Number of byte needed to represent 64 bit values (10 * 7 > 64)
 		// Read lower 7 bits of value
-		let byte = Number(value64bit & 0x7Fn)
+		let byte = Number(valueBigInt & 0x7Fn)
 
-		value64bit = value64bit >> 7n
+		valueBigInt = valueBigInt >> 7n
 
 		// If no data left after this byte, we can stop
-		if (!value64bit) {
+		if (!valueBigInt) {
 			result.push(byte)
 			break
 		}
@@ -365,6 +369,15 @@ const alignmentValues = [
 	{ value: 72, name: "Center" }
 ]
 
+const linkValues = [
+	{ value: 16, name: "music" },
+	{ value: 10, name: "cycle" },
+	{ value: 17, name: "countdown" },
+	{ value: 18, name: "stopwatch" },
+	{ value: 19, name: "pomodoro" },
+	{ value: 5, name: "workout" },
+	{ value: 25, name: "voice" },
+]
 
 /**
  * Format value based on type
@@ -386,7 +399,13 @@ export function formatParameterValue(value, type) {
 			const alignment = alignmentValues.find(e => e.value === value)
 			return alignment ? alignment.name : value
 
+		case "link":
+			const link = linkValues.find(e => e.value === value)
+			return link ? link.name : value
+
 		case "color":
+			// Convert value to unsigned
+			value = (new Uint32Array([value]))[0]
 			return "0x" + value.toString(16).toUpperCase()
 
 		default:
@@ -411,6 +430,9 @@ export function parseParameterValue(representation, type) {
 
 		case "alignment":
 			return alignmentValues.find(e => e.name === representation).value
+
+		case "link":
+			return linkValues.find(e => e.name === representation).value
 
 		case "color":
 			return parseInt(representation.match(/0x([\da-f]+)/i)[1], 16)

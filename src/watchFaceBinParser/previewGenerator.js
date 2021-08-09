@@ -36,13 +36,13 @@ const DISPLAY_INFO = [
         padZeros: 2
     },
     {
-        path: "TimeNew.Minutes.Minutes",
+        path: "TimeNew.MinutesAndSeconds.Minutes",
         type: "number",
         statusName: "minutes",
         padZeros: 2
     },
     {
-        path: "TimeNew.Minutes.Seconds",
+        path: "TimeNew.MinutesAndSeconds.Seconds",
         type: "number",
         statusName: "seconds",
         padZeros: 2
@@ -372,6 +372,9 @@ export function generatePreview(parameters, images, status) {
                 break
 
             case "numberWithDelimiter": {
+                if (!parameter.Number) {
+                    break
+                }
                 const textImageIds = values.map(v => convertNumberToImageIds(v, parameter.Number, info.padZeros, null, parameter.MinusImageIndex))
                     .reduce((a, b) => {
                         if (parameter.SuffixImageIndex && parameter.AppendSuffixToAll) {

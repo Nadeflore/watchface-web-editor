@@ -91,6 +91,9 @@ describe('readVariableWidthValue()', () => {
     it('read negative values', () => {
         expect(readVariableWidthValue(Uint8Array.of(0xF3, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x01))).toStrictEqual([-13, 10])
     })
+    it('read 32bit negative values', () => {
+        expect(readVariableWidthValue(Uint8Array.of(0xF3, 0xFF, 0xFF, 0xFF, 0x0F), 32)).toStrictEqual([-13, 5])
+    })
     it('read 31 bit value', () => {
         expect(readVariableWidthValue(Uint8Array.of(0x80, 0x80, 0x80, 0x80, 0x04))).toStrictEqual([1073741824, 5])
     })
@@ -111,6 +114,9 @@ describe('writeVariableWidthValue()', () => {
     })
     it('write negative values', () => {
         expect(writeVariableWidthValue(-13)).toStrictEqual(Uint8Array.of(0xF3, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x01))
+    })
+    it('write 32bit negative values', () => {
+        expect(writeVariableWidthValue(-13, 32)).toStrictEqual(Uint8Array.of(0xF3, 0xFF, 0xFF, 0xFF, 0x0F))
     })
     it('write 31 bit value', () => {
         expect(writeVariableWidthValue(1073741824)).toStrictEqual(Uint8Array.of(0x80, 0x80, 0x80, 0x80, 0x04))

@@ -49,7 +49,7 @@ export function parseWatchFaceBin(buffer, fileStructureInfo) {
 
     console.debug(`Read parameters info ${parameterBufferSize}:${parametersInfoSize}`)
     // Read parameters info
-    const parametersInfo = parseParameters(new Uint8Array(buffer, offset, parametersInfoSize))
+    const parametersInfo = parseParameters(new Uint8Array(buffer, offset, parametersInfoSize), fileStructureInfo.valueBitSize)
 
     // Offset is now at parameters
     offset += parametersInfoSize
@@ -65,7 +65,7 @@ export function parseWatchFaceBin(buffer, fileStructureInfo) {
         const parameterOffset = value["1"]
         const parameterSize = value["2"]
         console.debug(`Read parameter ${key}, ${parameterOffset}:${parameterSize}`)
-        parameters[key] = parseParameters(new Uint8Array(buffer, offset + parameterOffset, parameterSize))
+        parameters[key] = parseParameters(new Uint8Array(buffer, offset + parameterOffset, parameterSize), fileStructureInfo.valueBitSize)
     }
 
 
@@ -109,7 +109,7 @@ export function writeWatchFaceBin(parametersWithNames, images, fileStructureInfo
 
     for (const [key, value] of Object.entries(parametersWithIds)) {
         // Encode parameter to binary
-        const binaryParameter = writeParameters(value)
+        const binaryParameter = writeParameters(value, fileStructureInfo.valueBitSize)
         // write postion and offset in parameters info
         parametersInfo[key] = { "1": binaryParameters.length, "2": binaryParameter.length }
         // write actual parameter
@@ -124,7 +124,7 @@ export function writeWatchFaceBin(parametersWithNames, images, fileStructureInfo
     parametersInfo["1"]["1"] = binaryParameters.length
 
     // Encode parameters info
-    const binaryParametersInfo = writeParameters(parametersInfo)
+    const binaryParametersInfo = writeParameters(parametersInfo, fileStructureInfo.valueBitSize)
 
     const binaryImagesInfo = new Uint8Array(images.length * 4)
     const binaryImagesInfoView = new DataView(binaryImagesInfo.buffer)

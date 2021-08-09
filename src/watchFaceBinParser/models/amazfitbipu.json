@@ -6,6 +6,7 @@
         "roundedBorder": 6
     },
     "fileType": {
+        "valueBitSize": 32,
         "signatureSize": 4,
         "header": [
             85,
@@ -99,6 +100,7 @@
         "parameters": {
             "2:Background": {
                 "1:Image": "Image",
+                "2:Color": "color",
                 "3:PreviewEN": "Image",
                 "4:PreviewCN": "Image",
                 "5:PreviewCN2": "Image"
@@ -130,28 +132,45 @@
                 "1:Steps": {
                     "1:Number": "Number",
                     "2:PrefixImageIndex": "imgid",
-                    "3:SuffixImageIndex": "imgid"
+                    "3:SuffixImageIndex": "imgid",
+                    "4:ImagePosSuffix": "Image",
+                    "6:GoToZone": "GoToZone"
                 },
                 "3:Calories": {
                     "1:Number": "Number",
-                    "2:SuffixImageIndex": "imgid"
+                    "2:SuffixImageIndex": "imgid",
+                    "3:ImagePosSuffix": "Image",
+                    "4:GoToZone": "GoToZone"
                 },
                 "4:Pulse": {
                     "1:Number": "Number",
                     "2:PrefixImageIndex": "imgid",
                     "3:NoDataImageIndex": "imgid",
-                    "4:SuffixImageIndex": "imgid"
+                    "4:SuffixImageIndex": "imgid",
+                    "5:ImagePosSuffix": "Image",
+                    "6:GoToZone": "GoToZone"
                 },
                 "5:Distance": {
                     "1:Number": "Number",
                     "2:KmSuffixImageIndex": "imgid",
                     "3:DecimalPointImageIndex": "imgid",
-                    "4:MilesSuffixImageIndex": "imgid"
+                    "4:MilesSuffixImageIndex": "imgid",
+                    "5:ImagePosSuffix": "Image",
+                    "6:GoToZone": "GoToZone"
                 },
                 "6:PAI": {
-                    "1:Number": "Number"
+                    "1:Number": "Number",
+                    "2:PrefixImageIndex": "imgid",
+                    "3:ImagePosSuffix": "Image",
+                    "4:GoToZone": "GoToZone"
                 },
-                "7:UnknownV7": "int"
+                "7:UnknownV7": "int",
+                "8:StandingGoal": {
+                    "1:Number": "Number",
+                    "2:SuffixImageIndex": "imgid",
+                    "3:ImagePosSuffix": "Image",
+                    "4:GoToZone": "GoToZone"
+                }
             },
             "5:Date": {
                 "1:MonthAndDayAndYear": {
@@ -173,9 +192,20 @@
                     "5:TwoDigitsDay": "bool",
                     "6:Unknown6": "bool",
                     "9:SeparateNew": {
+                        "1:Year": "Number",
                         "2:Month": "Number",
                         "3:Day": "Number",
-                        "13:DelimiterImageIndex": "imgid"
+                        "4:MonthFollow": "bool",
+                        "5:DayFollow": "bool",
+                        "8:YearPrefixImageId": "imgid",
+                        "9:MonthPrefixImageId": "imgid",
+                        "10:DayPrefixImageId": "imgid",
+                        "11:YearSuffixImageId": "imgid",
+                        "12:MonthSuffixImageId": "imgid",
+                        "13:DaySuffixImageId": "imgid",
+                        "14:YearPrefixPosition": "Coordinates",
+                        "15:MonthPrefixPosition": "Coordinates",
+                        "16:DayPrefixPosition": "Coordinates"
                     }
                 },
                 "2:DayAmPm": {
@@ -190,7 +220,8 @@
                 },
                 "4:ENWeekDays": "ImageRange",
                 "5:CNWeekDays": "ImageRange",
-                "6:CN2WeekDays": "ImageRange"
+                "6:CN2WeekDays": "ImageRange",
+                "8:WeekDayPointer": "ProgressPointer"
             },
             "6:Weather": {
                 "1:Icon": {
@@ -214,10 +245,15 @@
                         }
                     }
                 },
+                "3:AirQuality": {
+                    "1:Number": "Number",
+                    "3:ImagePosSuffix": "Image",
+                    "6:SuffixImageIndex": "imgid"
+                },
                 "4:Humidity": {
                     "1:Number": "Number",
                     "2:SuffixImageIndex": "imgid",
-                    "3:ImagePosSuffix": "Image"
+                    "9:ImagePosSuffix": "Image"
                 },
                 "5:Wind": {
                     "1:Number": "Number",
@@ -229,12 +265,10 @@
                     "7:ImagePosSuffixCN2": "Image"
                 },
                 "6:UVIndex": {
-                    "1:UV": {
-                        "1:Number": "Number",
-                        "2:SuffixImageIndex": "imgid"
-                    },
-                    "2:UVCN": "ImageRange",
-                    "3:UVCN2": "ImageRange"
+                    "1:Number": "Number",
+                    "2:ImagePosSuffix": "ImageRange",
+                    "3:GoToZone": "GoToZone",
+                    "5:PrefixImageId": "imgid"
                 }
             },
             "7:StepsProgress": {
@@ -252,7 +286,8 @@
                     "6:EndAngle": "int",
                     "7:Width": "int",
                     "8:Color": "color"
-                }
+                },
+                "6:ProgressPointer": "ProgressPointer"
             },
             "8:Status": {
                 "1:DoNotDisturb": "StatusImage",
@@ -270,7 +305,9 @@
                 "3:Linear": {
                     "1:StartImageIndex": "imgid",
                     "2:Segments": "Coordinates"
-                }
+                },
+                "5:ProgressPointer": "ProgressPointer",
+                "6:ImagePosSuffix": "Image"
             },
             "10:AnalogDialFace": {
                 "1:Hours": "VectorShape",
@@ -299,7 +336,8 @@
                     "6:EndAngle": "int",
                     "7:Width": "int",
                     "8:Color": "color"
-                }
+                },
+                "6:ProgressPointer": "ProgressPointer"
             },
             "14:WeekDaysIcons": {
                 "1:Monday": "Image",
@@ -315,21 +353,98 @@
                 "3:Linear": {
                     "1:StartImageIndex": "imgid",
                     "2:Segments": "Coordinates"
+                },
+                "6:ProgressPointer": "ProgressPointer"
+            },
+            "17:HumidityProgress": {
+                "2:LineScale": "ImageRange",
+                "3:Linear": {
+                    "1:StartImageIndex": "imgid",
+                    "2:Segments": "Coordinates"
+                },
+                "6:ProgressPointer": "ProgressPointer"
+            },
+            "18:Alarm": {
+                "1:Number": "Number",
+                "2:DelimiterImageIndex": "imgid",
+                "3:OnImage": "Image",
+                "4:OffImage": "Image",
+                "5:NoDataImage": "Image",
+                "6:GoToZone": "GoToZone",
+                "7:New": {
+                    "1:Hours": "Number",
+                    "2:Minutes": "Number",
+                    "7:TwoDigitsMinutes": "bool",
+                    "8:TwoDigitsSeconds": "bool",
+                    "11:MinutesFollow": "bool"
                 }
+            },
+            "19:System": {
+                "1:Shortcuts": {
+                    "1:Image": "Image",
+                    "2:Link": "link",
+                    "3:GoToZone": "GoToZone"
+                }
+            },
+            "20:ImageAnalogDialFace": {
+                "3:Hours": "ImageClockHand",
+                "4:Minutes": "ImageClockHand",
+                "5:Seconds": "ImageClockHand"
             },
             "21:TimeNew": {
                 "1:Hours": "Number",
                 "2:HoursPrefixImageId": "imgid",
-                "3:Unknown3": "int",
+                "3:TwoDigitsHours": "bool",
                 "4:HoursSuffixImageId": "imgid",
                 "5:MinutesSuffixImageId": "imgid",
-                "8:Minutes": {
+                "6:Unknown6": "int",
+                "7:SecondsSuffixImageId": "imgid",
+                "8:MinutesAndSeconds": {
+                    "1:Unknow1": "int",
                     "2:Minutes": "Number",
                     "3:Seconds": "Number",
+                    "4:TwoDigitsMinutes": "bool",
+                    "5:TwoDigitsSeconds": "bool",
                     "6:MinutesPrefixImageId": "imgid",
+                    "7:SecondsPrefixImageId": "imgid",
+                    "8:MinutesFollow": "bool",
+                    "9:SecondsFollow": "bool",
                     "10:HoursPrefixPosition": "Coordinates",
-                    "11:MinutesPrefixPosition": "Coordinates"
+                    "11:MinutesPrefixPosition": "Coordinates",
+                    "12:SecondsPrefixPosition": "Coordinates"
                 }
+            },
+            "23:PAIProgress": {
+                "2:LineScale": "ImageRange",
+                "3:Linear": {
+                    "1:StartImageIndex": "imgid",
+                    "2:Segments": "Coordinates"
+                },
+                "4:ProgressPointer": "ProgressPointer"
+            },
+            "24:StandingGoalProgress": {
+                "2:LineScale": "ImageRange",
+                "3:Linear": {
+                    "1:StartImageIndex": "imgid",
+                    "2:Segments": "Coordinates"
+                },
+                "4:ProgressPointer": "ProgressPointer"
+            },
+            "25:AirQualityProgress": {
+                "1:LineScale": "ImageRange",
+                "2:Linear": {
+                    "1:StartImageIndex": "imgid",
+                    "2:Segments": "Coordinates"
+                },
+                "3:ProgressPointer": "ProgressPointer"
+            },
+            "26:UVIndexProgress": {
+                "1:LineScale": "ImageRange",
+                "2:Linear": {
+                    "1:StartImageIndex": "imgid",
+                    "2:Segments": "Coordinates"
+                },
+                "3:ProgressPointer": "ProgressPointer"
             }
         },
         "types": {
@@ -374,7 +489,8 @@
             "Temperature": {
                 "1:Number": "Number",
                 "2:MinusImageIndex": "imgid",
-                "3:SuffixImageIndex": "imgid"
+                "3:SuffixImageIndex": "imgid",
+                "5:NoDataImageIndex": "imgid"
             },
             "VectorShape": {
                 "1:OnlyBorder": "bool",
@@ -382,6 +498,32 @@
                 "3:Center": "Coordinates",
                 "4:Shape": "Coordinates",
                 "5:CenterImage": "Image"
+            },
+            "ImageClockHand": {
+                "1:ClockHandImageId": "imgid",
+                "2:ImageCenterY": "int",
+                "3:Center": "Coordinates",
+                "4:CenterImage": "Image"
+            },
+            "GoToZone": {
+                "1:TopLeftX": "int",
+                "2:TopLeftY": "int",
+                "3:BottomRightX": "int",
+                "4:BottomRightY": "int",
+                "5:Unknown5": "int"
+            },
+            "ProgressPointer": {
+                "1:Pointer": {
+                    "1:CenterX": "int",
+                    "2:CenterY": "int",
+                    "3:StartAngle": "int",
+                    "4:EndAngle": "int",
+                    "5:PointerImageId": "imgid",
+                    "6:ImageCenterY": "int"
+                },
+                "2:BackgroundImageEN": "Image",
+                "3:BackgroundImageCN": "Image",
+                "4:BackgroundImageCN2": "Image"
             }
         }
     }
