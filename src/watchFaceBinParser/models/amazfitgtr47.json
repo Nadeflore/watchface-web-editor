@@ -1,0 +1,9 @@
+{
+    "name": "Amazfit GTR 47mm",
+    "screen": {
+        "width": 454,
+        "height": 454,
+        "roundedBorder": 227
+    },
+    "fileType": "HMDIAL_GTR"
+}

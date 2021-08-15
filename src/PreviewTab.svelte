@@ -20,7 +20,7 @@
         caloriesPercent: 20,
         pulse: 123,
         heartPercent: 43,
-        distance: 12.3,
+        distance: 14.6,
         pai: 156,
         year: 2021,
         month: 3,

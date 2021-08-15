@@ -457,7 +457,7 @@ export function generatePreview(parameters, images, status) {
                     const currentFrameLooped = currentFrame % animation.AnimationImages.ImagesCount
 
                     // display only if repeat count is not exceeded
-                    if (currentFrame < animation.RepeatCount * animation.AnimationImages.ImagesCount)
+                    if (animation.RepeatCount === 0 || currentFrame < animation.RepeatCount * animation.AnimationImages.ImagesCount)
                         displayImageFromRange(result, animation.AnimationImages, currentFrameLooped)
                 }
 

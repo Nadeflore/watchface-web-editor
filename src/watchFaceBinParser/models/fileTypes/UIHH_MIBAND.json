@@ -105,13 +105,17 @@
         "1:Tens": "ImageRange",
         "2:Ones": "ImageRange"
       },
+      "3:Seconds": {
+        "1:Tens": "ImageRange",
+        "2:Ones": "ImageRange"
+      },
       "5:DelimiterImage": "Image",
       "6:TimeDelimiterImage": "Image",
       "7:SunsetTimeNumber": "Number",
       "8:SunsetTimeDelimiterImage": "imgid",
       "9:SunriseTimeNumber": "Number",
       "10:SunriseTimeDelimiterImage": "imgid",
-      "11:DisplayMinutesFirst": "bool",
+      "11:DrawingOrder": "bool",
       "12:SunsetNoDataImage": "Image",
       "13:SunriseNoDataImage": "Image"
     },

@@ -1,0 +1,9 @@
+{
+    "name": "Amazfit GTR 42mm",
+    "screen": {
+        "width": 390,
+        "height": 390,
+        "roundedBorder": 195
+    },
+    "fileType": "HMDIAL_GTR"
+}

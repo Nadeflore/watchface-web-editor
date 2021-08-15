@@ -2,17 +2,19 @@ import { parseParameters, writeParameters, convertIdsToNames, convertNamesToIds 
 import { parseImage, writeImage } from './imageParser'
 import { uncompressFile } from './compressedFilesUtils'
 
-import UIHH from './models/fileTypes/UIHH.json'
+import UIHH_MIBAND from './models/fileTypes/UIHH_MIBAND.json'
+import HMDIAL_GTR from './models/fileTypes/HMDIAL_GTR.json'
 import miband4 from './models/miband4.json'
 import miband5 from './models/miband5.json'
 import miband6 from './models/miband6.json'
 import amazfitbip from './models/amazfitbip.json'
 import amazfitbips from './models/amazfitbips.json'
 import amazfitbipu from './models/amazfitbipu.json'
-import amazfitgtr from './models/amazfitgtr.json'
+import amazfitgtr42 from './models/amazfitgtr42.json'
+import amazfitgtr47 from './models/amazfitgtr47.json'
 
-const fileTypes = { UIHH }
-const watchModelsDescriptor = [miband5, miband6, miband4, amazfitbip, amazfitbips, amazfitbipu, amazfitgtr]
+const fileTypes = { UIHH_MIBAND, HMDIAL_GTR }
+const watchModelsDescriptor = [amazfitgtr42, amazfitgtr47, miband4, miband5, miband6, amazfitbip, amazfitbips, amazfitbipu]
 
 export function getAvailableModels() {
     for (const model of watchModelsDescriptor) {
