@@ -1,5 +1,6 @@
 import { parseParameters, writeParameters, convertIdsToNames, convertNamesToIds } from './parametersParser'
 import { parseImage, writeImage } from './imageParser'
+import { uncompressFile } from './compressedFilesUtils'
 
 import UIHH from './models/fileTypes/UIHH.json'
 import miband4 from './models/miband4.json'
@@ -8,9 +9,10 @@ import miband6 from './models/miband6.json'
 import amazfitbip from './models/amazfitbip.json'
 import amazfitbips from './models/amazfitbips.json'
 import amazfitbipu from './models/amazfitbipu.json'
+import amazfitgtr from './models/amazfitgtr.json'
 
 const fileTypes = { UIHH }
-const watchModelsDescriptor = [miband5, miband6, miband4, amazfitbip, amazfitbips, amazfitbipu]
+const watchModelsDescriptor = [miband5, miband6, miband4, amazfitbip, amazfitbips, amazfitbipu, amazfitgtr]
 
 export function getAvailableModels() {
     for (const model of watchModelsDescriptor) {
@@ -28,6 +30,10 @@ export function getAvailableModels() {
  * @returns {{parameters: object, images: object[]}} An object containing the parameters and images found in the file
  */
 export function parseWatchFaceBin(buffer, fileStructureInfo) {
+    if (new DataView(buffer, 0, 1).getUint8(0) === 0x4F) {
+        buffer = new Uint8Array(uncompressFile(buffer)).buffer
+    }
+
     const headerSize = fileStructureInfo.header.length
     let offset = 0;
     // Read header
@@ -42,10 +48,13 @@ export function parseWatchFaceBin(buffer, fileStructureInfo) {
         throw new Error(`Invalid file signature, expected ${expectedSignature} but found ${fileSignature}`)
     }
 
+    const parameterBufferSizePosition = fileStructureInfo.parameterBufferSizePosition || headerSize - 0x8
+    const parametersInfoSizePosition = fileStructureInfo.parametersInfoSizePosition || headerSize - 0x4
+
     // Size of the biggest paramater
     // Parameters with a size bigger than this will be ignored by the watch
-    const parameterBufferSize = header.getUint32(headerSize - 0x8, true)
-    const parametersInfoSize = header.getUint32(headerSize - 0x4, true)
+    const parameterBufferSize = header.getUint32(parameterBufferSizePosition, true)
+    const parametersInfoSize = header.getUint32(parametersInfoSizePosition, true)
 
     console.debug(`Read parameters info ${parameterBufferSize}:${parametersInfoSize}`)
     // Read parameters info
@@ -152,8 +161,10 @@ export function writeWatchFaceBin(parametersWithNames, images, fileStructureInfo
     result.set(fileStructureInfo.header, 0)
 
     // Set parameters info size
-    resultView.setUint32(headerSize - 0x8, maxParameterLength, true)
-    resultView.setUint32(headerSize - 0x4, binaryParametersInfo.length, true)
+    const parameterBufferSizePosition = fileStructureInfo.parameterBufferSizePosition || headerSize - 0x8
+    const parametersInfoSizePosition = fileStructureInfo.parametersInfoSizePosition || headerSize - 0x4
+    resultView.setUint32(parameterBufferSizePosition, maxParameterLength, true)
+    resultView.setUint32(parametersInfoSizePosition, binaryParametersInfo.length, true)
 
     let offset = headerSize
 

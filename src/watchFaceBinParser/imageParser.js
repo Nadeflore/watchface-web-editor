@@ -18,17 +18,19 @@ export function parseImage(dataBuffer) {
 
 	// read header
 	const pixelFormat = dataView.getUint16(2, true)
+
+	if (pixelFormat === 0x65) {
+		return parseCompressedImage(dataBuffer)
+	} else if (pixelFormat === 0xFFFF) {
+		return parse32BitImage(dataBuffer)
+	}
+
 	const width = dataView.getUint16(4, true)
 	const height = dataView.getUint16(6, true)
 	const rowSize = dataView.getUint16(8, true)
 	const bitsPerPixel = dataView.getUint16(10, true)
 	const paletteColorsCount = dataView.getUint16(12, true)
 	const transparentPaletteColor = dataView.getUint16(14, true)
-
-	if (pixelFormat === 0x65) {
-		return parseCompressedImage(dataBuffer)
-	}
-
 
 
 	if (!([16, 24, 32].includes(bitsPerPixel) && paletteColorsCount === 0 && [0x08, 0x13, 0x1B, 0x1C, 0x10, 0x09].includes(pixelFormat)) && !([1, 2, 4, 8].includes(bitsPerPixel) && paletteColorsCount > 0 && pixelFormat === 0x64)) {
@@ -131,6 +133,55 @@ export function parseImage(dataBuffer) {
 
 	return { pixels, width, height, bitsPerPixel, pixelFormat }
 }
+
+export function parse32BitImage(dataBuffer) {
+	const dataView = new DataView(dataBuffer)
+	// Check signature
+	if (!(dataView.getUint8(0) === 0x42 && dataView.getUint8(1) === 0x4D)) {
+		throw new Error("Invalid image signature")
+	}
+
+	// read header
+	const pixelFormat = dataView.getUint16(2, true)
+	const width = dataView.getUint32(4, true)
+	const height = dataView.getUint32(8, true)
+	const bitsPerPixel = dataView.getUint32(12, true)
+	const colorDepth = dataView.getUint32(16, true)
+	const unknown = dataView.getUint16(20, true)
+
+	if (!([32].includes(bitsPerPixel) && [0xFFFF].includes(pixelFormat) && [24].includes(colorDepth))) {
+		throw new Error(`Unsuported pixel format/bitsPerPixel (should add support) ${pixelFormat.toString(16)} ${bitsPerPixel}`)
+	}
+
+	// Read pixel data
+	const pixels = new Uint8ClampedArray(4 * width * height);
+	for (let y = 0; y < height; y++) {
+		for (let x = 0; x < width; x++) {
+			// read pixel color info
+			let red;
+			let green;
+			let blue;
+			let alpha = 0xFF
+
+			const bytePerPixel = bitsPerPixel / 8
+			const pixelPosition = 24 + (y * width * 4) + (x * bytePerPixel)
+
+			red = dataView.getUint8(pixelPosition)
+			green = dataView.getUint8(pixelPosition + 1)
+			blue = dataView.getUint8(pixelPosition + 2)
+			alpha = dataView.getUint8(pixelPosition + 3)
+
+			const pixelPositionInResultArray = (y * width + x) * 4
+			pixels[pixelPositionInResultArray] = red
+			pixels[pixelPositionInResultArray + 1] = green
+			pixels[pixelPositionInResultArray + 2] = blue
+			pixels[pixelPositionInResultArray + 3] = alpha
+		}
+	}
+
+	return { pixels, width, height, bitsPerPixel, pixelFormat }
+}
+
 
 /**
  * 
