@@ -13,9 +13,17 @@ export function uncompressFile(dataBuffer, startOffset = 0) {
     let offset = startOffset
 
     // while a new chunk is found
-    while (offset < dataView.byteLength && dataView.getUint8(offset) === 0x4F) {
+    while (offset < dataView.byteLength && [0x4F, 0x4E].includes(dataView.getUint8(offset))) {
+        const chunkType = dataView.getUint8(offset)
         endOfChunk += dataView.getUint16(offset + 1, true)
         offset += 9
+        if (chunkType === 0x4E) {
+            // UncompressedChunk
+            for (; offset < endOfChunk; offset++) {
+                result.push(dataView.getUint8(offset))
+            }
+            continue
+        }
         // While the chunk is not finished
         while (offset < endOfChunk) {
 
@@ -78,6 +86,10 @@ export function uncompressFile(dataBuffer, startOffset = 0) {
             }
         }
 
+    }
+
+    if (offset < dataView.byteLength) {
+        console.log(`End of compression: ${dataView.getUint8(offset).toString(16)}`)
     }
 
     // The rest of the file is not compressed

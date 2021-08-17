@@ -4,6 +4,7 @@ import { uncompressFile } from './compressedFilesUtils'
 
 import UIHH_MIBAND from './models/fileTypes/UIHH_MIBAND.json'
 import HMDIAL_GT from './models/fileTypes/HMDIAL_GT.json'
+import UIHH_GT2 from './models/fileTypes/UIHH_GT2.json'
 import miband4 from './models/miband4.json'
 import miband5 from './models/miband5.json'
 import miband6 from './models/miband6.json'
@@ -14,9 +15,10 @@ import amazfitgtr42 from './models/amazfitgtr42.json'
 import amazfitgtr47 from './models/amazfitgtr47.json'
 import amazfitgtr2 from './models/amazfitgtr2.json'
 import amazfitgts from './models/amazfitgts.json'
+import amazfitgts2 from './models/amazfitgts2.json'
 
-const fileTypes = { UIHH_MIBAND, HMDIAL_GT }
-const watchModelsDescriptor = [amazfitgts, amazfitgtr2, amazfitgtr42, amazfitgtr47, miband4, miband5, miband6, amazfitbip, amazfitbips, amazfitbipu]
+const fileTypes = { UIHH_MIBAND, HMDIAL_GT, UIHH_GT2 }
+const watchModelsDescriptor = [amazfitgts2, amazfitgts, amazfitgtr2, amazfitgtr42, amazfitgtr47, miband4, miband5, miband6, amazfitbip, amazfitbips, amazfitbipu]
 
 export function getAvailableModels() {
     for (const model of watchModelsDescriptor) {
@@ -36,7 +38,7 @@ export function getAvailableModels() {
 export function parseWatchFaceBin(buffer, fileStructureInfo) {
     // Check is file is compressed and needs to be uncompressed
     if (fileStructureInfo.compressionStart != null) {
-        if (new DataView(buffer, fileStructureInfo.compressionStart, 1).getUint8(0) === 0x4F) {
+        if ([0x4F, 0x4E].includes(new DataView(buffer, fileStructureInfo.compressionStart, 1).getUint8(0))) {
             buffer = new Uint8Array(uncompressFile(buffer, fileStructureInfo.compressionStart)).buffer
         }
     }
