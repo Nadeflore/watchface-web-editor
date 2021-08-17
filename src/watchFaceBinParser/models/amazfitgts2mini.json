@@ -1,0 +1,9 @@
+{
+    "name": "Amazfit GTS 2 mini",
+    "screen": {
+        "width": 306,
+        "height": 354,
+        "roundedBorder": 48
+    },
+    "fileType": "UIHH_BIPU_GTS2MINI"
+}
