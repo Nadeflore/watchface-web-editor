@@ -18,9 +18,11 @@ import amazfitgtr2 from './models/amazfitgtr2.json'
 import amazfitgts from './models/amazfitgts.json'
 import amazfitgts2 from './models/amazfitgts2.json'
 import amazfitgts2mini from './models/amazfitgts2mini.json'
+import amazfittrex from './models/amazfittrex.json'
+import amazfittrexpro from './models/amazfittrexpro.json'
 
 const fileTypes = { UIHH_MIBAND, HMDIAL_GT, UIHH_GT2, UIHH_BIPU_GTS2MINI }
-const watchModelsDescriptor = [amazfitgts2mini, amazfitgts2, amazfitgts, amazfitgtr2, amazfitgtr42, amazfitgtr47, miband4, miband5, miband6, amazfitbip, amazfitbips, amazfitbipu]
+const watchModelsDescriptor = [amazfittrexpro, amazfittrex, amazfitgts2mini, amazfitgts2, amazfitgts, amazfitgtr2, amazfitgtr42, amazfitgtr47, miband4, miband5, miband6, amazfitbip, amazfitbips, amazfitbipu]
 
 export function getAvailableModels() {
     for (const model of watchModelsDescriptor) {

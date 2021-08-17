@@ -295,7 +295,7 @@ export function generatePreview(parameters, images, status) {
     for (const info of DISPLAY_INFO) {
         const lang = status.locale?.lang
         // check path exists in parameter
-        const parameter = getPath(parameters, info.path, lang)
+        let parameter = getPath(parameters, info.path, lang)
 
         if (!parameter) {
             // not found in this watchface, skip
@@ -341,9 +341,11 @@ export function generatePreview(parameters, images, status) {
 
             case "numberWithExtra":
                 if (parameter.SpacingX !== undefined) {
+                    parameter = { Number: { ...parameter } }
                     // Actually just a number
-                    displayText(result, images, convertNumberToImageIds(Math.round(value), parameter, info.padZeros), parameter)
-                    break
+                    if (info.path.startsWith("Weather.Temperature.") && parameters.Weather.Temperature.Symbols) {
+                        parameter = { ...parameter, ...parameters.Weather.Temperature.Symbols }
+                    }
                 }
 
                 let textImageIds
