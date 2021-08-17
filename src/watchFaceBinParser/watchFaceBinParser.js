@@ -12,9 +12,10 @@ import amazfitbips from './models/amazfitbips.json'
 import amazfitbipu from './models/amazfitbipu.json'
 import amazfitgtr42 from './models/amazfitgtr42.json'
 import amazfitgtr47 from './models/amazfitgtr47.json'
+import amazfitgtr2 from './models/amazfitgtr2.json'
 
 const fileTypes = { UIHH_MIBAND, HMDIAL_GTR }
-const watchModelsDescriptor = [amazfitgtr42, amazfitgtr47, miband4, miband5, miband6, amazfitbip, amazfitbips, amazfitbipu]
+const watchModelsDescriptor = [amazfitgtr2, amazfitgtr42, amazfitgtr47, miband4, miband5, miband6, amazfitbip, amazfitbips, amazfitbipu]
 
 export function getAvailableModels() {
     for (const model of watchModelsDescriptor) {
@@ -32,8 +33,11 @@ export function getAvailableModels() {
  * @returns {{parameters: object, images: object[]}} An object containing the parameters and images found in the file
  */
 export function parseWatchFaceBin(buffer, fileStructureInfo) {
-    if (new DataView(buffer, 0, 1).getUint8(0) === 0x4F) {
-        buffer = new Uint8Array(uncompressFile(buffer)).buffer
+    // Check is file is compressed and needs to be uncompressed
+    if (fileStructureInfo.compressionStart != null) {
+        if (new DataView(buffer, fileStructureInfo.compressionStart, 1).getUint8(0) === 0x4F) {
+            buffer = new Uint8Array(uncompressFile(buffer, fileStructureInfo.compressionStart)).buffer
+        }
     }
 
     const headerSize = fileStructureInfo.header.length
@@ -67,13 +71,13 @@ export function parseWatchFaceBin(buffer, fileStructureInfo) {
 
     // First parameter info contains parameters size and images count
     const parametersSize = parametersInfo["1"]["1"]
-    const imagesCount = parametersInfo["1"]["2"]
+    let imagesCount = parametersInfo["1"]["2"]
     delete parametersInfo["1"]
 
     // Other parameter info contain location of each parameters
     const parameters = {}
     for (const [key, value] of Object.entries(parametersInfo)) {
-        const parameterOffset = value["1"]
+        const parameterOffset = value["1"] || 0
         const parameterSize = value["2"]
         console.debug(`Read parameter ${key}, ${parameterOffset}:${parameterSize}`)
         parameters[key] = parseParameters(new Uint8Array(buffer, offset + parameterOffset, parameterSize), fileStructureInfo.valueBitSize)
@@ -84,6 +88,9 @@ export function parseWatchFaceBin(buffer, fileStructureInfo) {
     const parametersWithName = convertIdsToNames(parameters, fileStructureInfo)
     // Offset is now at images info
     offset += parametersSize
+
+    const imageCountOffset = fileStructureInfo.imageCountOffset || 0
+    imagesCount -= imageCountOffset
 
     const imagesInfoSize = 4 * imagesCount
     const imagesInfo = new DataView(buffer, offset, imagesInfoSize)

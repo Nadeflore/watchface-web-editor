@@ -12,8 +12,9 @@ const HEADER_SIZE = 16
 export function parseImage(dataBuffer) {
 	const dataView = new DataView(dataBuffer)
 	// Check signature
-	if (!(dataView.getUint8(0) === 0x42 && dataView.getUint8(1) === 0x4D)) {
-		throw new Error("Invalid image signature")
+	const signature = dataView.getUint16(0)
+	if (signature !== 0x424D) {
+		throw new Error(`Invalid image signature: ${signature.toString(16).padStart(2, '0')}`)
 	}
 
 	// read header
@@ -137,8 +138,8 @@ export function parseImage(dataBuffer) {
 export function parse32BitImage(dataBuffer) {
 	const dataView = new DataView(dataBuffer)
 	// Check signature
-	if (!(dataView.getUint8(0) === 0x42 && dataView.getUint8(1) === 0x4D)) {
-		throw new Error("Invalid image signature")
+	if (dataView.getUint16(0) !== 0x424D) {
+		throw new Error(`Invalid image signature: ${dataView.getUint16(0).toString(16).padStart(2, '0')}`)
 	}
 
 	// read header
@@ -191,8 +192,8 @@ export function parse32BitImage(dataBuffer) {
 export function parseCompressedImage(dataBuffer) {
 	const dataView = new DataView(dataBuffer)
 	// Check signature
-	if (!(dataView.getUint8(0) === 0x42 && dataView.getUint8(1) === 0x4D)) {
-		throw new Error("Invalid image signature")
+	if (dataView.getUint16(0) !== 0x424D) {
+		throw new Error(`Invalid image signature: ${dataView.getUint16(0).toString(16).padStart(2, '0')}`)
 	}
 
 	// read header

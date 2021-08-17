@@ -51,7 +51,14 @@
     $: {
         try {
             imagesToDisplay = generatePreview($parameters, $images, status).map(
-                (e) => ({ image: $images[e.imageId], position: e.position })
+                (e) => ({
+                    image: $images[
+                        e.imageId -
+                            ($watchModelDescriptor.fileType.imageCountOffset ||
+                                0)
+                    ],
+                    position: e.position,
+                })
             );
         } catch (e) {
             console.error(e);

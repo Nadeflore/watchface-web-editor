@@ -1,5 +1,5 @@
 import { parseWatchFaceBin, writeWatchFaceBin } from './watchFaceBinParser'
-import fileStructureInfoUIHH from './models/fileTypes/UIHH.json'
+import fileStructureInfoUIHH from './models/fileTypes/UIHH_MIBAND.json'
 
 describe('parseWatchFaceBin()', () => {
     it('parse simple bin', () => {

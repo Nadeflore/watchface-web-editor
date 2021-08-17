@@ -29,8 +29,15 @@ export function parseParameters(byteArray, valueBitSize) {
 		offset += keySize
 
 		// From the second byte on is the value
-		let [fieldValue, valueSize] = readVariableWidthValue(byteArray.subarray(offset), valueBitSize)
-
+		let fieldValue, valueSize
+		if (fieldDescriptor & 0x05) {
+			// float value
+			fieldValue = new DataView(byteArray.buffer, byteArray.byteOffset, offset + 4).getFloat32(offset, true)
+			valueSize = 4
+		} else {
+			// variable width value
+			[fieldValue, valueSize] = readVariableWidthValue(byteArray.subarray(offset), valueBitSize)
+		}
 		offset += valueSize
 
 		if (hasChildren) {
@@ -369,6 +376,12 @@ const alignmentValues = [
 	{ value: 72, name: "Center" }
 ]
 
+const halignmentValues = [
+	{ value: 0, name: "Left" },
+	{ value: 1, name: "Center" },
+	{ value: 2, name: "Right" }
+]
+
 const linkValues = [
 	{ value: 16, name: "music" },
 	{ value: 10, name: "cycle" },
@@ -377,6 +390,21 @@ const linkValues = [
 	{ value: 19, name: "pomodoro" },
 	{ value: 5, name: "workout" },
 	{ value: 25, name: "voice" },
+]
+
+const datatypeValues = [
+	{ value: 1, name: "Battery" },
+	{ value: 2, name: "Steps" },
+	{ value: 3, name: "Calories" },
+	{ value: 4, name: "HeartRate" },
+	{ value: 5, name: "PAI" },
+	{ value: 6, name: "Distance" },
+	{ value: 7, name: "Unknown7" },
+	{ value: 8, name: "Weather" },
+	{ value: 9, name: "UVindex" },
+	{ value: 10, name: "AirQuality" },
+	{ value: 11, name: "Humidity" }
+
 ]
 
 /**
@@ -389,6 +417,7 @@ const linkValues = [
 export function formatParameterValue(value, type) {
 	switch (type) {
 		case "int":
+		case "float":
 		case "imgid":
 			return value
 
@@ -399,9 +428,17 @@ export function formatParameterValue(value, type) {
 			const alignment = alignmentValues.find(e => e.value === value)
 			return alignment ? alignment.name : value
 
+		case "halignment":
+			const halignment = halignmentValues.find(e => e.value === value)
+			return halignment != null ? halignment.name : value
+
 		case "link":
 			const link = linkValues.find(e => e.value === value)
 			return link ? link.name : value
+
+		case "datatype":
+			const datatype = datatypeValues.find(e => e.value === value)
+			return datatype ? datatype.name : value
 
 		case "color":
 			// Convert value to unsigned
@@ -422,6 +459,7 @@ export function formatParameterValue(value, type) {
 export function parseParameterValue(representation, type) {
 	switch (type) {
 		case "int":
+		case "float":
 		case "imgid":
 			return representation
 
@@ -431,8 +469,14 @@ export function parseParameterValue(representation, type) {
 		case "alignment":
 			return alignmentValues.find(e => e.name === representation).value
 
+		case "halignment":
+			return halignmentValues.find(e => e.name === representation).value
+
 		case "link":
 			return linkValues.find(e => e.name === representation).value
+
+		case "datatype":
+			return datatypeValues.find(e => e.name === representation).value
 
 		case "color":
 			return parseInt(representation.match(/0x([\da-f]+)/i)[1], 16)

@@ -34,6 +34,16 @@ describe('parseParameters()', () => {
             }
         )
     })
+    it('parse float values', () => {
+        expect(parseParameters(Uint8Array.of(0x0A, 0x0A, 0x0D, 0x00, 0x00, 0xA0, 0x3F, 0x3D, 0x00, 0x00, 0xB4, 0x43))).toStrictEqual(
+            {
+                "1": {
+                    "1": 1.25,
+                    "7": 360.0
+                }
+            }
+        )
+    })
 })
 
 describe('writeParameters()', () => {
@@ -223,6 +233,11 @@ describe('formatParameterValue()', () => {
     it('format color', () => {
         expect(formatParameterValue(0xFF00FF, "color")).toStrictEqual("0xFF00FF")
     })
+    it('format horizontal alignment', () => {
+        expect(formatParameterValue(0, "halignment")).toStrictEqual("Left")
+        expect(formatParameterValue(1, "halignment")).toStrictEqual("Center")
+        expect(formatParameterValue(2, "halignment")).toStrictEqual("Right")
+    })
 })
 
 describe('parseParameterValue()', () => {
@@ -253,5 +268,10 @@ describe('parseParameterValue()', () => {
     })
     it('parse color', () => {
         expect(parseParameterValue("0xFF00FF", "color")).toStrictEqual(0xFF00FF)
+    })
+    it('parse horizontal alignment', () => {
+        expect(parseParameterValue("Left", "halignment")).toStrictEqual(0)
+        expect(parseParameterValue("Center", "halignment")).toStrictEqual(1)
+        expect(parseParameterValue("Right", "halignment")).toStrictEqual(2)
     })
 })

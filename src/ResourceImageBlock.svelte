@@ -3,7 +3,7 @@
 	export let id;
 
 	import { createEventDispatcher } from "svelte";
-	import { images } from "./stores";
+	import { images, watchModelDescriptor } from "./stores";
 
 	import ImageComponent from "./Image.svelte";
 	import OpenImageButton from "./OpenImageButton.svelte";
@@ -36,7 +36,7 @@
 
 <div class="image-block">
 	<div class="id">
-		{id}
+		{id + ($watchModelDescriptor.fileType.imageCountOffset || 0)}
 		<OpenImageButton on:imageLoad={handleImageLoad}>R</OpenImageButton>
 	</div>
 	<div class="image-container">

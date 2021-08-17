@@ -1,10 +1,16 @@
 
 
-export function uncompressFile(dataBuffer) {
+export function uncompressFile(dataBuffer, startOffset = 0) {
     const dataView = new DataView(dataBuffer)
     let result = []
-    let endOfChunk = 0
-    let offset = 0
+
+    // copy uncompressed bytes before compression starts
+    for (let i = 0; i < startOffset; i++) {
+        result.push(dataView.getUint8(i))
+    }
+
+    let endOfChunk = startOffset
+    let offset = startOffset
 
     // while a new chunk is found
     while (offset < dataView.byteLength && dataView.getUint8(offset) === 0x4F) {

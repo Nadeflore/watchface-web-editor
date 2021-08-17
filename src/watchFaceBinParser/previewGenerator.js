@@ -5,7 +5,11 @@ const DISPLAY_INFO = [
         path: "Background.Image",
         type: "always"
     },
-    // TODO: support flag DisplayMinutesFirst
+    {
+        path: "Background.ImageIndex",
+        type: "always"
+    },
+    // TODO: support flag drawOrder DisplayMinutesFirst
     {
         path: "Time.Hours",
         type: "twoDigits",
@@ -306,7 +310,17 @@ export function generatePreview(parameters, images, status) {
 
         switch (info.type) {
             case "always":
-                displaySingleImage(result, parameter)
+                if (typeof parameter === "number") {
+                    result.push({
+                        imageId: parameter,
+                        position: {
+                            x: 0,
+                            y: 0
+                        }
+                    })
+                } else {
+                    displaySingleImage(result, parameter)
+                }
                 break
 
             case "twoDigits":
