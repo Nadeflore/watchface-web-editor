@@ -33,7 +33,7 @@
 		height: 100vh;
 	}
 	.middle-area {
-		height: calc(100vh - 210px - 50px);
+		height: calc(100vh - 30% - 50px);
 		display: flex;
 	}
 	.json-editor {

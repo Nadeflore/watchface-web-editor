@@ -11,15 +11,12 @@
 
 	const dispatch = createEventDispatcher();
 
-	let checkeredBackground;
-	const imageDisplayAreaWidth = 80;
-	const imageDisplayAreaHeight = 100;
-
+	let imageContainerHeight = 1;
 	$: imageDisplaySize = computeSizeToFitArea(
 		image.width,
 		image.height,
-		imageDisplayAreaWidth,
-		imageDisplayAreaHeight
+		100,
+		imageContainerHeight
 	);
 
 	const handleImageLoad = (event) => {
@@ -39,10 +36,9 @@
 		{id + ($watchModelDescriptor.fileType.imageCountOffset || 0)}
 		<OpenImageButton on:imageLoad={handleImageLoad}>R</OpenImageButton>
 	</div>
-	<div class="image-container">
+	<div class="image-container" bind:clientHeight={imageContainerHeight}>
 		<div
 			class="checkered-background"
-			bind:this={checkeredBackground}
 			style="width: {imageDisplaySize.width}px; height: {imageDisplaySize.height}px"
 		>
 			<ImageComponent {image} displaySize={imageDisplaySize} />
@@ -60,13 +56,17 @@
 
 <style>
 	.image-block {
+		width: 100px;
 		margin: 10px;
+		flex-shrink: 0;
 		border: 1px solid black;
+		display: flex;
+		flex-direction: column;
 	}
 
 	.image-container {
-		width: 80px;
-		height: 100px;
+		flex: 1;
+		overflow: hidden;
 		display: flex;
 		align-items: center;
 		justify-content: center;

@@ -11,7 +11,7 @@
 
 <style>
     .bar {
-        height: 210px;
+        height: 30%;
         overflow-x: auto;
         display: flex;
     }

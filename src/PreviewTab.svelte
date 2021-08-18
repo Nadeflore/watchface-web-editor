@@ -8,7 +8,8 @@
         errorMessage,
     } from "./stores";
 
-    let imagesToDisplay = [];
+    let previewTabDiv;
+    let canvas;
 
     const status = {
         hours: 12,
@@ -48,22 +49,66 @@
         },
     };
 
-    $: {
+    $: if (canvas && $watchModelDescriptor) {
+        canvas.width = $watchModelDescriptor.screen.width;
+        canvas.height = $watchModelDescriptor.screen.height;
+    }
+
+    $: if (canvas && $watchModelDescriptor) {
+        const ctx = canvas.getContext("2d");
+        let imagesWithPositionPromise = [];
         try {
-            imagesToDisplay = generatePreview($parameters, $images, status).map(
-                (e) => ({
-                    image: $images[
+            imagesWithPositionPromise = generatePreview(
+                $parameters,
+                $images,
+                status
+            ).map((e) => {
+                const image =
+                    $images[
                         e.imageId -
                             ($watchModelDescriptor.fileType.imageCountOffset ||
                                 0)
-                    ],
-                    position: e.position,
-                })
-            );
+                    ];
+                const imageData = ctx.createImageData(
+                    image.width,
+                    image.height
+                );
+                imageData.data.set(image.pixels);
+                return new Promise((resolve) => {
+                    createImageBitmap(imageData).then((img) => {
+                        resolve({
+                            image: img,
+                            position: e.position,
+                        });
+                    });
+                });
+            });
         } catch (e) {
             console.error(e);
             errorMessage.set(e);
         }
+
+        Promise.all(imagesWithPositionPromise).then((imagesWithPosition) => {
+            // Clip to visible area
+            const r = $watchModelDescriptor.screen.roundedBorder;
+            const w = canvas.width;
+            const h = canvas.height;
+            ctx.beginPath();
+            ctx.moveTo(r, 0);
+            ctx.arcTo(w, 0, w, h, r);
+            ctx.arcTo(w, h, 0, h, r);
+            ctx.arcTo(0, h, 0, 0, r);
+            ctx.arcTo(0, 0, w, 0, r);
+            ctx.closePath();
+            ctx.clip();
+            // Fill background with black
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // draw actual images
+            imagesWithPosition.forEach((img) => {
+                ctx.drawImage(img.image, img.position.x, img.position.y);
+            });
+        });
     }
 
     let animationIntervalId = undefined;
@@ -80,55 +125,65 @@
         }
     }
 
-    let displayArea;
-    let x = 0;
-    let y = 0;
+    const cursorCoordinates = { x: 0, y: 0 };
+    let coordinatesBoxPosition = null;
 
     function handleMouseover(e) {
-        const rect = displayArea.getBoundingClientRect();
-        x = e.clientX - rect.left;
-        y = e.clientY - rect.top;
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        cursorCoordinates.x = Math.round((e.clientX - rect.left) * scaleX);
+        cursorCoordinates.y = Math.round((e.clientY - rect.top) * scaleY);
+
+        const outerRect = previewTabDiv.getBoundingClientRect();
+        coordinatesBoxPosition = {
+            x: e.clientX - outerRect.left + 10,
+            y: e.clientY - outerRect.top + 20,
+        };
     }
 </script>
 
-<div class="preview-tab">
-    {#if $watchModelDescriptor}
+<div class="preview-tab" bind:this={previewTabDiv}>
+    <canvas
+        class="preview-image"
+        bind:this={canvas}
+        on:mousemove={handleMouseover}
+        on:mouseout={() => (coordinatesBoxPosition = null)}
+        on:blur={() => (coordinatesBoxPosition = null)}
+    />
+    {#if coordinatesBoxPosition}
         <div
-            class="display-area"
-            style="width: {$watchModelDescriptor.screen
-                .width}px; height: {$watchModelDescriptor.screen
-                .height}px; border-radius: {$watchModelDescriptor.screen
-                .roundedBorder}px"
-            on:mousemove={handleMouseover}
-            bind:this={displayArea}
+            class="coordinates-box"
+            style="left: {coordinatesBoxPosition.x}px; top: {coordinatesBoxPosition.y}px;"
         >
-            {#each imagesToDisplay as imageToDisplay}
-                <Image
-                    image={imageToDisplay.image}
-                    position={imageToDisplay.position}
-                />
-            {/each}
+            {cursorCoordinates.x},{cursorCoordinates.y}
         </div>
     {/if}
-    <div>{x},{y}</div>
-    <button on:click={toogleAnimation}
-        >{animationIntervalId ? "stop" : "play"} animation</button
-    >
+    <div>
+        <button on:click={toogleAnimation}
+            >{animationIntervalId ? "stop" : "play"} animation</button
+        >
+    </div>
 </div>
 
 <style>
     .preview-tab {
+        position: relative;
         height: 100%;
-        overflow: auto;
         padding: 5px;
         flex-shrink: 0;
+        max-width: 100%;
+        max-height: 100%;
     }
 
-    .display-area {
-        position: relative;
-        background-color: black;
-        width: 124px;
-        height: 294px;
-        overflow: hidden;
+    .preview-image {
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    .coordinates-box {
+        position: absolute;
+        background: white;
+        pointer-events: none;
     }
 </style>
