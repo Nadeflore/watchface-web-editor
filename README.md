@@ -1,6 +1,6 @@
 # Watchface web editor
 
-An editor for bin watchface files made in javascript.
+An editor for bin watchface files.
 
 ## Get started
 
