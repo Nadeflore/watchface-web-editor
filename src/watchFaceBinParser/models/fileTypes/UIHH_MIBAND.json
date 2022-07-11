@@ -260,7 +260,8 @@
     },
     "10:AnalogDialFace": {
       "1:Hours": "VectorShape",
-      "2:Minutes": "VectorShape"
+      "2:Minutes": "VectorShape",
+      "3:Seconds": "VectorShape"
     },
     "11:Other": {
       "1:Animation": {

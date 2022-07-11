@@ -279,6 +279,21 @@ const DISPLAY_INFO = [
         path: "Status2.Bluetooth",
         type: "onoff",
         statusName: "bluetooth"
+    },
+    {
+        path: "AnalogDialFace.Hours",
+        type: "clockHand",
+        statusName: "hours"
+    },
+    {
+        path: "AnalogDialFace.Minutes",
+        type: "clockHand",
+        statusName: "minutes"
+    },
+    {
+        path: "AnalogDialFace.Seconds",
+        type: "clockHand",
+        statusName: "seconds"
     }
 ]
 
@@ -287,9 +302,10 @@ const DISPLAY_INFO = [
  * @param {object} parameters Parameters of the watchface
  * @param {{width: number, height: number}[]} images Resources images of the watchface (actual data is not needed, only size is enough)
  * @param {object} status object containing the status to display
+ * @param {object} watchModelDescriptor descriptor of the watch model
  * @returns {{imageId: number, position: {x: number, y: number}}[]}
  */
-export function generatePreview(parameters, images, status) {
+export function generatePreview(parameters, images, status, watchModelDescriptor) {
     const result = []
 
     for (const info of DISPLAY_INFO) {
@@ -476,6 +492,47 @@ export function generatePreview(parameters, images, status) {
                     if (animation.RepeatCount === 0 || currentFrame < animation.RepeatCount * animation.AnimationImages.ImagesCount)
                         displayImageFromRange(result, animation.AnimationImages, currentFrameLooped)
                 }
+                break
+
+            case "clockHand":
+                // compute angle
+                const totalValue = info.statusName == "hours" ? 12 : 60
+                const angle = 2 * Math.PI * value / totalValue - Math.PI / 2
+                // create a canvas to draw and transform the vector shape
+                const canvas = document.createElement('canvas')
+                canvas.width = watchModelDescriptor.screen.width;
+                canvas.height = watchModelDescriptor.screen.height;
+                const ctx = canvas.getContext("2d");
+                // translate and rotate to position
+                ctx.translate(parameter.Center.X, parameter.Center.Y)
+                ctx.rotate(angle)
+
+                // draw the shape
+                const coordinates = parameter.Shape
+                ctx.fillStyle = parameter.Color.replace("0x", "#")
+                ctx.strokeStyle = ctx.fillStyle
+                ctx.beginPath();
+                ctx.moveTo(coordinates[0].X, coordinates[0].Y);
+                coordinates.slice(1).forEach(coord => ctx.lineTo(coord.X, coord.Y))
+                ctx.closePath();
+
+                if (parameter.OnlyBorder) {
+                    ctx.stroke()
+                } else {
+                    ctx.fill()
+                }
+
+                result.push({
+                    canvas,
+                    position: {
+                        x: 0,
+                        y: 0
+                    }
+                })
+
+                if (parameter.CenterImage) {
+                    displaySingleImage(result, parameter.CenterImage)
+                }
 
                 break
         }
@@ -483,6 +540,10 @@ export function generatePreview(parameters, images, status) {
 
     // Check all imagesIds are valids
     for (const imageInfo of result) {
+        if (imageInfo.canvas) {
+            continue
+        }
+
         if (typeof imageInfo.imageId !== 'number') {
             throw new Error("Invalid image Id")
         }

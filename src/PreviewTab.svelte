@@ -61,8 +61,17 @@
             imagesWithPositionPromise = generatePreview(
                 $parameters,
                 $images,
-                status
+                status,
+                $watchModelDescriptor
             ).map((e) => {
+                if (e.canvas) {
+                    return new Promise((resolve) => {
+                        resolve({
+                            image: e.canvas,
+                            position: e.position,
+                        });
+                    });
+                }
                 const image =
                     $images[
                         e.imageId -
