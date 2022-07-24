@@ -1,9 +1,0 @@
-{
-    "name": "Amazfit GTS",
-    "screen": {
-        "width": 348,
-        "height": 442,
-        "roundedBorder": 55
-    },
-    "fileType": "HMDIAL_GT"
-}

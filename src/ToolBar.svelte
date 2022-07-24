@@ -14,7 +14,7 @@
         getAvailableModels,
         parseWatchFaceBin,
         writeWatchFaceBin,
-    } from "./watchFaceBinParser/watchFaceBinParser";
+    } from "watchface-js/watchFaceBinParser";
     import {
         startFileDownload,
         convertImagePixelsToPngDataUrl,

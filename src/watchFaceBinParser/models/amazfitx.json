@@ -1,9 +1,0 @@
-{
-    "name": "Amazfit X",
-    "screen": {
-        "width": 207,
-        "height": 640,
-        "roundedBorder": 3
-    },
-    "fileType": "HMDIAL_GT"
-}

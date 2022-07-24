@@ -1,9 +1,0 @@
-{
-    "name": "Amazfit Bip U",
-    "screen": {
-        "width": 302,
-        "height": 320,
-        "roundedBorder": 6
-    },
-    "fileType": "UIHH_BIPU_GTS2MINI"
-}

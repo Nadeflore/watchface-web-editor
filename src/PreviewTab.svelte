@@ -1,6 +1,6 @@
 <script>
     import Image from "./Image.svelte";
-    import { generatePreview } from "./watchFaceBinParser/previewGenerator";
+    import { generatePreview } from "watchface-js/previewGenerator";
     import {
         watchModelDescriptor,
         parameters,

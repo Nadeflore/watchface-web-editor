@@ -1,9 +1,0 @@
-{
-    "name": "Amazfit T-Rex Pro",
-    "screen": {
-        "width": 360,
-        "height": 360,
-        "roundedBorder": 180
-    },
-    "fileType": "UIHH_GT2"
-}
