@@ -1,6 +1,8 @@
 # Watchface web editor
 
-An editor for bin watchface files.
+A web editor for huami bin watchfaces
+
+Try it here: https://watchface-web-editor.vercel.app/
 
 ## Get started
 
