@@ -28,7 +28,9 @@
 				bind:textContent={$parametersJson}
 			/>
 			{#if $errorMessage}
-				<div class="error-message">{$errorMessage}</div>
+				<div class="message-bar">
+					<div class="error-message">{$errorMessage}</div>
+				</div>
 			{/if}
 		</div>
 	</div>
@@ -52,13 +54,22 @@
 		margin: 0;
 		flex-grow: 1;
 		margin-right: 3px;
+		display: flex;
+		flex-direction: column;
 	}
 	.json-text-area {
+		padding: 0.5em;
 		margin: 0;
-		height: calc(100% - 2em);
 		overflow: auto;
-		border: 1px solid #aaa;
-		border-radius: 5px;
+		outline: none;
+		flex-grow: 1;
+	}
+	.message-bar {
+		height: 2em;
+		padding-left: 1em;
+		line-height: 2em;
+		flex-shrink: 0;
+		box-shadow: 0 -3px 10px #00000020;
 	}
 
 	:global(button) {

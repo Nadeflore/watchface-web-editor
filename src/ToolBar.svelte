@@ -1,4 +1,5 @@
 <script>
+    import { version, homepage } from "./../package.json";
     import OpenFileButton from "./OpenFileButton.svelte";
     import OpenImageButton from "./OpenImageButton.svelte";
     import { onMount } from "svelte";
@@ -84,25 +85,30 @@
 </script>
 
 <div class="toolbar">
-    <select bind:value={$watchModelDescriptor} class="model-selector">
-        {#each models as model}
-            <option value={model}>
-                {model.name}
-            </option>
-        {/each}
-    </select>
-    <OpenFileButton
-        accept=".bin"
-        readAsArrayBuffer
-        on:fileLoad={handleBinFileLoad}>Open bin file</OpenFileButton
-    >
-    <button on:click={handleBinFileExport}>Export bin file</button>
-    {#if $images.length}
-        <button on:click={handleAllImagesExport}>Export all images</button>
-    {/if}
-    <OpenImageButton multiple on:imageLoad={handleAllImagesImport}
-        >Import images</OpenImageButton
-    >
+    <div class="controls">
+        <select bind:value={$watchModelDescriptor} class="model-selector">
+            {#each models as model}
+                <option value={model}>
+                    {model.name}
+                </option>
+            {/each}
+        </select>
+        <OpenFileButton
+            accept=".bin"
+            readAsArrayBuffer
+            on:fileLoad={handleBinFileLoad}>Open bin file</OpenFileButton
+        >
+        <button on:click={handleBinFileExport}>Export bin file</button>
+        {#if $images.length}
+            <button on:click={handleAllImagesExport}>Export all images</button>
+        {/if}
+        <OpenImageButton multiple on:imageLoad={handleAllImagesImport}
+            >Import images</OpenImageButton
+        >
+    </div>
+    <div class="info">
+        <a href={homepage}>Version {version}</a>
+    </div>
 </div>
 
 <style>
@@ -113,10 +119,15 @@
         overflow-x: auto;
         white-space: nowrap;
         background-color: #f5f5f5;
+        display: flex;
+        justify-content: space-between;
+        box-shadow: 0 3px 10px #00000033;
+        position: relative;
+        z-index: 100;
     }
 
     .model-selector {
-        max-width: 40%;
+        max-width: 160px;
         border-width: 0;
         padding-top: 0.5rem;
         padding-bottom: 0.5rem;
@@ -132,5 +143,10 @@
         align-items: center;
         font-size: 0.875rem;
         border-radius: 0.25rem;
+    }
+
+    .info {
+        padding-left: 1em;
+        line-height: 30px;
     }
 </style>

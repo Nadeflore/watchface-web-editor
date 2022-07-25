@@ -174,12 +174,15 @@
 <style>
     .preview-tab {
         position: relative;
-        height: 100%;
+        height: calc(100% - 10px);
         padding: 5px;
         flex-shrink: 0;
         max-width: 100%;
         max-height: 100%;
         background-color: #f5f5f5;
+        box-shadow: 3px 0 10px #00000033;
+        position: relative;
+        z-index: 2;
     }
 
     .preview-image {

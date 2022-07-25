@@ -1,7 +1,9 @@
 {
   "name": "watchface-web-editor",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "private": true,
+  "author": "Nadeflore",
+  "homepage": "https://github.com/Nadeflore/watchface-web-editor",
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
