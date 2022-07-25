@@ -96,15 +96,21 @@
         <OpenFileButton
             accept=".bin"
             readAsArrayBuffer
-            on:fileLoad={handleBinFileLoad}>Open bin file</OpenFileButton
+            on:fileLoad={handleBinFileLoad}
         >
-        <button on:click={handleBinFileExport}>Export bin file</button>
+            <i class="fa-solid fa-folder-open" /> Open bin
+        </OpenFileButton>
+        <button on:click={handleBinFileExport}>
+            <i class="fa-solid fa-file-export" /> Export bin
+        </button>
         {#if $images.length}
-            <button on:click={handleAllImagesExport}>Export all images</button>
+            <button on:click={handleAllImagesExport}>
+                <i class="fa-solid fa-images" /> Export all images
+            </button>
         {/if}
-        <OpenImageButton multiple on:imageLoad={handleAllImagesImport}
-            >Import images</OpenImageButton
-        >
+        <OpenImageButton multiple on:imageLoad={handleAllImagesImport}>
+            <i class="fa-solid fa-file-arrow-up" /> Replace images
+        </OpenImageButton>
     </div>
     <div class="info">
         <a href={homepage}>Version {version}</a>
