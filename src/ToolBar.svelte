@@ -84,7 +84,7 @@
 </script>
 
 <div class="toolbar">
-    <select bind:value={$watchModelDescriptor}>
+    <select bind:value={$watchModelDescriptor} class="model-selector">
         {#each models as model}
             <option value={model}>
                 {model.name}
@@ -107,10 +107,30 @@
 
 <style>
     .toolbar {
-        height: 50px;
+        height: 40 px;
         padding: 2px;
         box-sizing: border-box;
         overflow-x: auto;
         white-space: nowrap;
+        background-color: #f5f5f5;
+    }
+
+    .model-selector {
+        max-width: 40%;
+        border-width: 0;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+        margin: 0;
+        background-color: transparent;
+        line-height: 1rem;
+        color: #303030;
+        background-color: white;
+        box-shadow: inset 0 0 0 1px #bfbfbf;
+        justify-content: center;
+        align-items: center;
+        font-size: 0.875rem;
+        border-radius: 0.25rem;
     }
 </style>

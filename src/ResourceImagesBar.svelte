@@ -14,5 +14,6 @@
         height: 30%;
         overflow-x: auto;
         display: flex;
+        background-color: #f5f5f5;
     }
 </style>

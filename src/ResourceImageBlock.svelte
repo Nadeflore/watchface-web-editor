@@ -32,9 +32,15 @@
 </script>
 
 <div class="image-block">
-	<div class="id">
-		{id + ($watchModelDescriptor.fileType.imageCountOffset || 0)}
-		<OpenImageButton on:imageLoad={handleImageLoad}>R</OpenImageButton>
+	<div class="header">
+		<div class="id">
+			{id + ($watchModelDescriptor.fileType.imageCountOffset || 0)}
+		</div>
+		<div class="controls">
+			<OpenImageButton on:imageLoad={handleImageLoad}
+				><i class="fa-solid fa-upload" />
+			</OpenImageButton>
+		</div>
 	</div>
 	<div class="image-container" bind:clientHeight={imageContainerHeight}>
 		<div
@@ -59,8 +65,9 @@
 		width: 100px;
 		margin: 10px;
 		flex-shrink: 0;
-		border: 1px solid black;
+		border: 1px solid #cecece;
 		display: flex;
+		border-radius: 4px;
 		flex-direction: column;
 	}
 
@@ -70,6 +77,16 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+	}
+
+	.header {
+		margin-bottom: 0.3em;
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.id {
+		padding: 0.4em;
 	}
 
 	.checkered-background {

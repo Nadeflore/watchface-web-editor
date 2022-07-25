@@ -159,6 +159,7 @@
         on:mousemove={handleMouseover}
         on:mouseout={() => (coordinatesBoxPosition = null)}
         on:blur={() => (coordinatesBoxPosition = null)}
+        on:click={toogleAnimation}
     />
     {#if coordinatesBoxPosition}
         <div
@@ -168,11 +169,6 @@
             {cursorCoordinates.x},{cursorCoordinates.y}
         </div>
     {/if}
-    <div>
-        <button on:click={toogleAnimation}
-            >{animationIntervalId ? "stop" : "play"} animation</button
-        >
-    </div>
 </div>
 
 <style>
@@ -183,6 +179,7 @@
         flex-shrink: 0;
         max-width: 100%;
         max-height: 100%;
+        background-color: #f5f5f5;
     }
 
     .preview-image {
