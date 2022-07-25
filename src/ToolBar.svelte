@@ -16,6 +16,7 @@
         parseWatchFaceBin,
         writeWatchFaceBin,
     } from "watchface-js/watchFaceBinParser";
+    import { convertToBand7 } from "watchface-js/binToZeppOsConverter";
     import {
         startFileDownload,
         convertImagePixelsToPngDataUrl,
@@ -63,6 +64,21 @@
         }
     }
 
+    function handleConvertToBand7() {
+        const binFile = convertToBand7($parameters, $images)
+            .then((binFile) => {
+                startFileDownload(
+                    binFile,
+                    "application/octet-stream",
+                    "watchface_band7.bin"
+                );
+            })
+            .catch((e) => {
+                console.error(e);
+                errorMessage.set(e);
+            });
+    }
+
     function handleAllImagesExport() {
         const zip = new JSZip();
         const imagesFolder = zip.folder("images");
@@ -106,6 +122,11 @@
         {#if $images.length}
             <button on:click={handleAllImagesExport}>
                 <i class="fa-solid fa-images" /> Export all images
+            </button>
+        {/if}
+        {#if $watchModelDescriptor?.id == "miband6"}
+            <button on:click={handleConvertToBand7}>
+                <i class="fa-solid fa-file-arrow-down" /> Convert to band 7
             </button>
         {/if}
         <OpenImageButton multiple on:imageLoad={handleAllImagesImport}>

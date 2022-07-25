@@ -72,6 +72,10 @@
 		box-shadow: 0 -3px 10px #00000020;
 	}
 
+	.error-message {
+		color: #b80909;
+	}
+
 	:global(button) {
 		border-width: 0;
 		padding-top: 0.5rem;
