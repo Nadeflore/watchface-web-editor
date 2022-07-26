@@ -65,18 +65,23 @@
     }
 
     function handleConvertToBand7() {
-        const binFile = convertToBand7($parameters, $images)
-            .then((binFile) => {
-                startFileDownload(
-                    binFile,
-                    "application/octet-stream",
-                    "watchface_band7.bin"
-                );
-            })
-            .catch((e) => {
-                console.error(e);
-                errorMessage.set(e);
-            });
+        try {
+            const binFile = convertToBand7($parameters, $images)
+                .then((binFile) => {
+                    startFileDownload(
+                        binFile,
+                        "application/octet-stream",
+                        "watchface_band7.bin"
+                    );
+                })
+                .catch((e) => {
+                    console.error(e);
+                    errorMessage.set(e);
+                });
+        } catch (e) {
+            console.error(e);
+            errorMessage.set(e);
+        }
     }
 
     function handleAllImagesExport() {
@@ -119,18 +124,18 @@
         <button on:click={handleBinFileExport}>
             <i class="fa-solid fa-file-export" /> Export bin
         </button>
-        {#if $images.length}
-            <button on:click={handleAllImagesExport}>
-                <i class="fa-solid fa-images" /> Export all images
-            </button>
-        {/if}
         {#if $watchModelDescriptor?.id == "miband6"}
             <button on:click={handleConvertToBand7}>
                 <i class="fa-solid fa-file-arrow-down" /> Convert to band 7
             </button>
         {/if}
+        {#if $images.length}
+            <button on:click={handleAllImagesExport}>
+                <i class="fa-solid fa-images" /> Export all images
+            </button>
+        {/if}
         <OpenImageButton multiple on:imageLoad={handleAllImagesImport}>
-            <i class="fa-solid fa-file-arrow-up" /> Replace images
+            <i class="fa-solid fa-images" /> Replace all images
         </OpenImageButton>
     </div>
     <div class="info">
