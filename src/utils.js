@@ -57,7 +57,7 @@ export function convertImagePixelsToPngDataUrl(image) {
  * @param {{width: number, height: number}} maxSize When given, the image will be resized if bigger than the specified size
  * @returns {{pixels: Uint8Array, width: number, height: number}}
  */
-export function convertDataUrlToImagePixels(imgDataUrl, maxSize = undefined) {
+export function convertDataUrlToImagePixels(imgDataUrl, maxSize = undefined, name = undefined) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = function () {
@@ -83,6 +83,7 @@ export function convertDataUrlToImagePixels(imgDataUrl, maxSize = undefined) {
         pixels,
         height: height,
         width: width,
+        name
       });
     };
     img.onerror = function (e) { reject("Unable to read image") };

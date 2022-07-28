@@ -37,7 +37,7 @@
 			{id + ($watchModelDescriptor.fileType.imageCountOffset || 0)}
 		</div>
 		<div class="controls">
-			<OpenImageButton on:imageLoad={handleImageLoad}
+			<OpenImageButton limitSize on:imageLoad={handleImageLoad}
 				><i class="fa-solid fa-upload" />
 			</OpenImageButton>
 		</div>

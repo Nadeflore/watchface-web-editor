@@ -17,6 +17,7 @@
         writeWatchFaceBin,
     } from "watchface-js/watchFaceBinParser";
     import { convertToBand7 } from "watchface-js/binToZeppOsConverter";
+    import { writeImageAutoDetectBestFormat } from "watchface-js/tgaReaderWriter";
     import {
         startFileDownload,
         convertImagePixelsToPngDataUrl,
@@ -103,6 +104,27 @@
     function handleAllImagesImport(e) {
         images.set(e.detail.images);
     }
+
+    function handleConvertToZeppOs(e) {
+        try {
+            const zip = new JSZip();
+            for (const image of e.detail.images) {
+                const tgaImage = writeImageAutoDetectBestFormat(
+                    image.pixels,
+                    image.width,
+                    image.height
+                );
+                zip.file(`${image.name.split(".")[0]}.tga`, tgaImage);
+            }
+
+            zip.generateAsync({ type: "blob" }).then(function (content) {
+                startFileDownload(content, "application/zip", "images.zip");
+            });
+        } catch (e) {
+            console.error(e);
+            errorMessage.set(e);
+        }
+    }
 </script>
 
 <div class="toolbar">
@@ -134,8 +156,16 @@
                 <i class="fa-solid fa-images" /> Export all images
             </button>
         {/if}
-        <OpenImageButton multiple on:imageLoad={handleAllImagesImport}>
+        <OpenImageButton
+            multiple
+            limitSize
+            on:imageLoad={handleAllImagesImport}
+        >
             <i class="fa-solid fa-images" /> Replace all images
+        </OpenImageButton>
+        <OpenImageButton multiple on:imageLoad={handleConvertToZeppOs}>
+            <i class="fa-solid fa-images" /> Convert Images to zepp OS tga (mi band
+            7)
         </OpenImageButton>
     </div>
     <div class="info">
