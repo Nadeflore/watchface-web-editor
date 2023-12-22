@@ -33,7 +33,7 @@
 
 <OpenFileButton
 	{multiple}
-	accept=".jpg, .jpeg, .png, ,bmp"
+	accept=".jpg, .jpeg, .png, .bmp"
 	on:fileLoad={(e) => handleFileSelected(e)}
 	><slot />
 </OpenFileButton>
